@@ -5,7 +5,7 @@ import cors from "cors";
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT||3000;
 
 app.use(cors()); // cors 방식 허용
 app.use(express.static("public")); // 정적 파일 접근
@@ -16,6 +16,7 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`✅ Example app listening on port ${port}`);
 });
