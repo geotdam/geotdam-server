@@ -29,7 +29,7 @@ const sequelize = new Sequelize(
 );
 
 // ✅ models 폴더 내 .js 모델 파일 모두 불러오기
-fs.readdirSync(__dirname)
+fs.readdirSync(path.join(__dirname, 'database')) 
   .filter((file) => {
     return (
       file.indexOf(".") !== 0 &&
