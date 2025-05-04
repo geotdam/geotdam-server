@@ -1,64 +1,30 @@
-import fs from "fs";
-import path from "path";
-import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
-
+import express from "express";
+import cors from "cors";
+import db from './models/index.js'; 
 dotenv.config();
 
-const env = process.env.NODE_ENV || "development";
-import config from "../../config/config.cjs";
-const environmentConfig = config[env];
+const app = express();
+const port = process.env.PORT||3000;
 
-const __filename = new URL(import.meta.url).pathname; 
-const __dirname = path.dirname(__filename);
-const db = {};
+app.use(cors()); // cors 방식 허용
+app.use(express.static("public")); // 정적 파일 접근
+app.use(express.json()); // request의 본문을 json으로 해석할 수 있도록 함 (JSON 형태의 요청 body를 파싱하기 위함)
+app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형태로 본문 데이터 해석
 
-// Sequelize 인스턴스 생성
-const sequelize = new Sequelize(
-  environmentConfig.database, 
-  environmentConfig.username,
-  environmentConfig.password,
-  {
-    host: environmentConfig.host,
-    dialect: environmentConfig.dialect,
-    port: environmentConfig.port,
-    timezone: environmentConfig.timezone,
-    logging: console.log,
-  }
-);
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 
-// 모델 파일 순서대로 불러오기
-const modelFiles = [
-  'users.js',
-  'socialLogins.js',
-  'places.js',
-  'routes.js',
-  'reviews.js',
-  'routeBookmarks.js',
-  'routeImgs.js',
-  'routeLikes.js',
-  'userImgs.js',
-];
 
-modelFiles.forEach((file) => {
-  import(path.join(__dirname, 'database', file)).then((model) => {
-    const modelInstance = model.default(sequelize, Sequelize.DataTypes);
-    console.log(`Model loaded: ${file}`);
-    db[modelInstance.name] = modelInstance;
-  }).catch((error) => {
-    console.error(`Error loading model ${file}:`, error);
+// 데이터베이스 동기화 후 서버 실행
+db.sequelize.sync({ force: false })  // 기존 테이블은 삭제하지 않고 동기화
+  .then(() => {
+    console.log("✅ Database synced successfully.");
+    app.listen(port, () => {
+      console.log(`✅ Example app listening on port ${port}`);
+    });
+  })
+  .catch((error) => {
+    console.error("❌ Error syncing database:", error);
   });
-});
-
-// 모델 간 관계 설정
-Object.keys(db).forEach((modelName) => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-});
-
-// Sequelize 인스턴스와 모델들을 export
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
-
-export default db;
