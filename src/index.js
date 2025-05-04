@@ -17,6 +17,14 @@ app.get("/", (req, res) => {
 });
 
 
-app.listen(port, () => {
-  console.log(`✅ Example app listening on port ${port}`);
-});
+// 데이터베이스 동기화 후 서버 실행
+sequelize.sync({ force: false })  // 기존 테이블은 삭제하지 않고 동기화
+  .then(() => {
+    console.log("✅ Database synced successfully.");
+    app.listen(port, () => {
+      console.log(`✅ Example app listening on port ${port}`);
+    });
+  })
+  .catch((error) => {
+    console.error("❌ Error syncing database:", error);
+  });
