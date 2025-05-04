@@ -30,7 +30,7 @@ export default (sequelize, DataTypes) => {
       timestamps: false
     });
   
-    Users.associate = (models) => {
+    Routes.associate = (models) => {
     Routes.belongsTo(models.Users, { foreignKey: 'userId' });
     Routes.hasMany(models.RouteImgs, { foreignKey: 'routeId',
       onDelete: 'CASCADE',  

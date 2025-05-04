@@ -24,7 +24,7 @@ export default (sequelize, DataTypes) => {
       timestamps: false
     });
   
-    Users.associate = (models) => {
+    PlaceRoutes.associate = (models) => {
     PlaceRoutes.belongsTo(models.Routes, { foreignKey: 'routeId' });
     PlaceRoutes.belongsTo(models.Places, { foreignKey: 'placeId' });
     };

@@ -25,7 +25,7 @@ export default (sequelize, DataTypes) => {
       timestamps: false
     });
   
-    Users.associate = (models) => {
+    Places.associate = (models) => {
     Places.hasMany(models.PlaceImgs, { foreignKey: 'placeId',
       onDelete: 'CASCADE',  
       onUpdate: 'CASCADE'

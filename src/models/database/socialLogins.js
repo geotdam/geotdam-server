@@ -22,7 +22,7 @@ export default (sequelize, DataTypes) => {
     timestamps: false
   });
 
-  Users.associate = (models) => {
+  SocialLogins.associate = (models) => {
   SocialLogins.belongsTo(models.Users, { foreignKey: 'userId' });
   };
   return SocialLogins;
