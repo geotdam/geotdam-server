@@ -1,5 +1,5 @@
 //리뷰
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Reviews = sequelize.define('Reviews', {
     reviewId: {
       type: DataTypes.BIGINT,

@@ -1,5 +1,5 @@
 //유저 이미지 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const UserImgs = sequelize.define('UserImgs', {
     userProfileId: {
       type: DataTypes.BIGINT,

@@ -1,5 +1,5 @@
 //장소 루트
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
     const PlaceRoutes = sequelize.define('PlaceRoutes', {
       placeRouteId: {
         type: DataTypes.BIGINT,

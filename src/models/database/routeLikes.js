@@ -1,5 +1,5 @@
 //루트 좋아요
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const RouteLikes = sequelize.define('RouteLikes', {
     likeId: {
       type: DataTypes.BIGINT,

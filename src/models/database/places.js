@@ -1,5 +1,5 @@
 //장소
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
     const Places = sequelize.define('Places', {
       placeId: {
         type: DataTypes.BIGINT,

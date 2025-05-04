@@ -1,5 +1,5 @@
 //소셜 로그인 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const SocialLogins = sequelize.define('SocialLogins', {
     socialLoginId: {
       type: DataTypes.BIGINT,
