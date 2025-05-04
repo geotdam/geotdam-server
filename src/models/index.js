@@ -37,7 +37,7 @@ const modelFiles = [
   'routeBookmarks.js',
   'routeImgs.js',
   'routeLikes.js',
-  'userimgs.js',
+  'userImgs.js',
 ];
 
 // 각 모델을 순차적으로 불러와서 db 객체에 추가
