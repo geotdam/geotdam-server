@@ -28,19 +28,14 @@ const sequelize = new Sequelize(
   }
 );
 
-// ✅ models 폴더 내 .js 모델 파일 모두 불러오기
-fs.readdirSync(path.join(__dirname, 'database')) 
-  .filter((file) => {
-    return (
-      file.indexOf(".") !== 0 &&
-      file !== basename &&
-      file.slice(-3) === ".js"
-    );
-  })
-  .forEach((file) => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
+// ✅ models/database 폴더 내 .js 모델 파일 모두 불러오기
+const modelFiles = fs.readdirSync(path.join(__dirname, 'database'))
+  .filter((file) => file.indexOf('.') !== 0 && file.slice(-3) === '.js');
+
+for (const file of modelFiles) {
+  const model = await import(path.join(__dirname, 'database', file));  // 동적 import 사용
+  db[model.default.name] = model.default(sequelize, Sequelize.DataTypes);  // 모델 초기화
+}
 
 // ✅ 모델 간 관계 설정
 Object.keys(db).forEach((modelName) => {
