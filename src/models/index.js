@@ -40,7 +40,6 @@ const modelFiles = [
   'userImgs.js',
 ];
 
-<<<<<<< HEAD
 // 각 모델을 순차적으로 불러와서 db 객체에 추가
 modelFiles.forEach((file) => {
   import(path.join(__dirname, 'database', file)).then((model) => {
@@ -49,12 +48,6 @@ modelFiles.forEach((file) => {
     db[modelInstance.name] = modelInstance;
   });
 });
-=======
-for (const file of modelFiles) {
-  const model = await import(path.join(__dirname, 'database', file));  // 동적 import 사용
-  db[model.default.name] = model.default(sequelize, Sequelize.DataTypes);  // 모델 초기화
-}
->>>>>>> 209d3a7 (fix: sequlize instance 적용)
 
 // 모델 간 관계 설정 (모든 모델이 로드된 후에 설정)
 Object.keys(db).forEach((modelName) => {
