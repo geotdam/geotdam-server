@@ -55,6 +55,7 @@ const loadModels = async () => {
   console.log('모델 동기화 완료');
 };
 
+// loadModels를 실행하고 그 결과가 끝난 후 동기화가 되도록 처리
 loadModels().then(() => {
   console.log('모델 로딩 및 관계 설정 완료');
 }).catch(err => {
