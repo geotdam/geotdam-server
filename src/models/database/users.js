@@ -1,5 +1,5 @@
 //유저 
-export default (sequelize, DataTypes) => {
+export default (sequelize, DataTypes, models) => {
     const Users = sequelize.define('Users', {
       userId: {
         type: DataTypes.BIGINT,

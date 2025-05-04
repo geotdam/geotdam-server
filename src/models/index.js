@@ -34,7 +34,7 @@ const modelFiles = fs.readdirSync(path.join(__dirname, 'database'))
 
 for (const file of modelFiles) {
   const model = await import(path.join(__dirname, 'database', file));  // 동적 import 사용
-  db[model.default.name] = model.default(sequelize, Sequelize.DataTypes);  // 모델 초기화
+  db[model.default.name] = model.default(sequelize, Sequelize.DataTypes, db);  // 모델 초기화
 }
 
 // ✅ 모델 간 관계 설정

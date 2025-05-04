@@ -1,5 +1,5 @@
 //루트 이미지
-export default (sequelize, DataTypes) => {
+export default (sequelize, DataTypes, models) => {
   const RouteImgs = sequelize.define('RouteImgs', {
     routeImgId: {
       type: DataTypes.BIGINT,

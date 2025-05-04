@@ -1,5 +1,5 @@
 //루트 북마크
-export default (sequelize, DataTypes) => {
+export default (sequelize, DataTypes, models) => {
   const RouteBookmarks = sequelize.define('RouteBookmarks', {
     bookmarkId: {
       type: DataTypes.BIGINT,

@@ -1,5 +1,5 @@
 //장소 이미지 
-export default (sequelize, DataTypes) => {
+export default (sequelize, DataTypes, models) => {
     const PlaceImgs = sequelize.define('PlaceImgs', {
       placeImgId: {
         type: DataTypes.BIGINT,

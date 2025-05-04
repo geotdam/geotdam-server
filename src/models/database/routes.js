@@ -1,5 +1,5 @@
 // 루트 
-export default (sequelize, DataTypes) => {
+export default (sequelize, DataTypes, models) => {
     const Routes = sequelize.define('Routes', {
       routeId: {
         type: DataTypes.BIGINT,
