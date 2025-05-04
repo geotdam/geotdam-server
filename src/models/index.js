@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
-const dbConfig = require("../config/config.js");
+const dbConfig = require("../config/config.cjs");
 
 const basename = path.basename(__filename);
 const db = {};
