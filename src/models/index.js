@@ -35,7 +35,7 @@ const modelFiles = [
   'routes.js',
   'reviews.js',
   'routeBookmarks.js',
-  'routeimgs.js',
+  'routeImgs.js',
   'routeLikes.js',
   'userimgs.js',
 ];
