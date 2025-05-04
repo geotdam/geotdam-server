@@ -29,7 +29,16 @@ export default (sequelize, DataTypes) => {
     });
   
     
+  // sequelize.models 확인
+  console.log('sequelize.models:', sequelize.models);
+
+  // Places 모델이 정의되어 있는지 확인
+  if (sequelize.models.Places) {
+    console.log('Places model is defined:', sequelize.models.Places);
     PlaceImgs.belongsTo(sequelize.models.Places, { foreignKey: 'placeId' });
+  } else {
+    console.error('Places model is missing!');
+  }
   
     return PlaceImgs;
   };
