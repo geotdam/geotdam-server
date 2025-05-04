@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
-import { sequelize } from './models/index.js';
+import { db } from './models/index.js';
 
 dotenv.config();
 
@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
 
 
 // 데이터베이스 동기화 후 서버 실행
-sequelize.sync({ force: false })  // 기존 테이블은 삭제하지 않고 동기화
+db.sequelize.sync({ force: false })  // 기존 테이블은 삭제하지 않고 동기화
   .then(() => {
     console.log("✅ Database synced successfully.");
     app.listen(port, () => {
