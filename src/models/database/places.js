@@ -25,11 +25,11 @@ export default (sequelize, DataTypes) => {
       timestamps: false
     });
   
-    Places.hasMany(sequelize.models.placeImgs, { foreignKey: 'placeId',
+    Places.hasMany(sequelize.models.PlaceImgs, { foreignKey: 'placeId',
       onDelete: 'CASCADE',  
       onUpdate: 'CASCADE'
      });
-    Places.hasMany(sequelize.models.routes, {  foreignKey: 'placeId',
+    Places.hasMany(sequelize.models.Routes, {  foreignKey: 'placeId',
       onDelete: 'CASCADE',  
       onUpdate: 'CASCADE'
     });

@@ -32,8 +32,8 @@ export default (sequelize, DataTypes) => {
     timestamps: false
   });
 
-  RouteBookmarks.belongsTo(sequelize.models.users, { foreignKey: 'userId' });
-  RouteBookmarks.belongsTo(sequelize.models.routes, { foreignKey: 'routeId' });
+  RouteBookmarks.belongsTo(sequelize.models.Users, { foreignKey: 'userId' });
+  RouteBookmarks.belongsTo(sequelize.models.Routes, { foreignKey: 'routeId' });
 
   return RouteBookmarks;
 };

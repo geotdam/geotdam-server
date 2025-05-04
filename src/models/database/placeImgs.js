@@ -28,7 +28,7 @@ export default (sequelize, DataTypes) => {
       timestamps: false
     });
   
-    PlaceImgs.belongsTo(sequelize.models.places, { foreignKey: 'placeId' });
+    PlaceImgs.belongsTo(sequelize.models.Places, { foreignKey: 'placeId' });
   
     return PlaceImgs;
   };

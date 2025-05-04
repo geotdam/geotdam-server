@@ -30,8 +30,8 @@ export default (sequelize, DataTypes) => {
     timestamps: false
   });
 
-  Reviews.belongsTo(sequelize.models.users, { foreignKey: 'userId' });
-  Reviews.belongsTo(sequelize.models.routes, { foreignKey: 'routeId' });
+  Reviews.belongsTo(sequelize.models.Users, { foreignKey: 'userId' });
+  Reviews.belongsTo(sequelize.models.Routes, { foreignKey: 'routeId' });
 
   return Reviews;
 };

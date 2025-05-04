@@ -30,24 +30,24 @@ export default (sequelize, DataTypes) => {
       timestamps: false
     });
   
-    Routes.belongsTo(sequelize.models.users, { foreignKey: 'userId' });
-    Routes.hasMany(sequelize.models.routeImgs, { foreignKey: 'routeId',
+    Routes.belongsTo(sequelize.models.Users, { foreignKey: 'userId' });
+    Routes.hasMany(sequelize.models.RouteImgs, { foreignKey: 'routeId',
       onDelete: 'CASCADE',  
       onUpdate: 'CASCADE'
      });
-    Routes.hasMany(sequelize.models.routeLikes, { foreignKey: 'routeId',
+    Routes.hasMany(sequelize.models.RouteLikes, { foreignKey: 'routeId',
       onDelete: 'CASCADE',  
       onUpdate: 'CASCADE'
      });
-    Routes.hasMany(sequelize.models.routeBookmarks, { foreignKey: 'routeId',
+    Routes.hasMany(sequelize.models.RouteBookmarks, { foreignKey: 'routeId',
       onDelete: 'CASCADE',  
       onUpdate: 'CASCADE'
      });
-    Routes.hasMany(sequelize.models.reviews, { foreignKey: 'routeId',
+    Routes.hasMany(sequelize.models.Reviews, { foreignKey: 'routeId',
       onDelete: 'CASCADE',  
       onUpdate: 'CASCADE'
      });
-    Routes.hasMany(sequelize.models.places, { foreignKey: 'routeId',
+    Routes.hasMany(sequelize.models.Places, { foreignKey: 'routeId',
       onDelete: 'CASCADE',  
       onUpdate: 'CASCADE'
     });
