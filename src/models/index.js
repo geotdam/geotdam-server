@@ -1,10 +1,13 @@
-const fs = require("fs");
-const path = require("path");
-const Sequelize = require("sequelize");
-require("dotenv").config();
+import fs from "fs";
+import path from "path";
+import { Sequelize } from "sequelize";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const env = process.env.NODE_ENV || "development";
-const config = require("../config/config.cjs")[env];
+import config from "../config/config.cjs";
+const environmentConfig = config[env];
 
 const basename = path.basename(__filename);
 const db = {};
