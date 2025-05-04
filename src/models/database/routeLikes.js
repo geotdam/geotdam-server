@@ -1,6 +1,10 @@
-//루트 좋아요
-export default (sequelize, DataTypes) => {
-  const RouteLikes = sequelize.define('RouteLikes', {
+import { Sequelize, DataTypes } from "sequelize";
+
+// Sequelize.Model을 상속하는 방식으로 변경
+class RouteLikes extends Sequelize.Model {}
+
+RouteLikes.init(
+  {
     likeId: {
       type: DataTypes.BIGINT,
       primaryKey: true,
@@ -27,13 +31,17 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       field: 'updated_at'
     }
-  }, {
-    tableName: 'routeLikes',
-    timestamps: false
-  });
+  },
+  {
+    sequelize, // sequelize 인스턴스를 전달
+    modelName: 'RouteLikes', // 모델 이름
+    tableName: 'routeLikes', // 테이블 이름
+    timestamps: false // createdAt, updatedAt 자동 생성 방지
+  }
+);
 
-  RouteLikes.belongsTo(sequelize.models.Users, { foreignKey: 'userId' });
-  RouteLikes.belongsTo(sequelize.models.Routes, { foreignKey: 'routeId' });
+// 관계 설정
+RouteLikes.belongsTo(Sequelize.models.Users, { foreignKey: 'userId' });
+RouteLikes.belongsTo(Sequelize.models.Routes, { foreignKey: 'routeId' });
 
-  return RouteLikes;
-};
+export default RouteLikes;
