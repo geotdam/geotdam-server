@@ -1,10 +1,6 @@
-import { Sequelize, DataTypes } from "sequelize";
-
-// Sequelize.Model을 상속하는 방식으로 변경
-class SocialLogins extends Sequelize.Model {}
-
-SocialLogins.init(
-  {
+//소셜 로그인 
+export default (sequelize, DataTypes) => {
+  const SocialLogins = sequelize.define('SocialLogins', {
     socialLoginId: {
       type: DataTypes.BIGINT,
       primaryKey: true,
@@ -21,16 +17,13 @@ SocialLogins.init(
     },
     email: DataTypes.STRING,
     platform: DataTypes.STRING
-  },
-  {
-    sequelize, // sequelize 인스턴스를 전달
-    modelName: 'SocialLogins', // 모델 이름
-    tableName: 'socialLogins', // 테이블 이름
-    timestamps: false // createdAt, updatedAt 자동 생성 방지
-  }
-);
+  }, {
+    tableName: 'socialLogins',
+    timestamps: false
+  });
 
-// 관계 설정
-SocialLogins.belongsTo(Sequelize.models.Users, { foreignKey: 'userId' });
-
-export default SocialLogins;
+  Users.associate = (models) => {
+  SocialLogins.belongsTo(models.Users, { foreignKey: 'userId' });
+  };
+  return SocialLogins;
+};

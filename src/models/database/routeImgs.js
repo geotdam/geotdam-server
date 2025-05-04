@@ -1,10 +1,6 @@
-import { Sequelize, DataTypes } from "sequelize";
-
-// Sequelize.Model을 상속하는 방식으로 변경
-class RouteImgs extends Sequelize.Model {}
-
-RouteImgs.init(
-  {
+//루트 이미지
+export default (sequelize, DataTypes) => {
+  const RouteImgs = sequelize.define('RouteImgs', {
     routeImgId: {
       type: DataTypes.BIGINT,
       primaryKey: true,
@@ -27,16 +23,14 @@ RouteImgs.init(
       type: DataTypes.DATE,
       field: 'updated_at'
     }
-  },
-  {
-    sequelize, // sequelize 인스턴스를 전달
-    modelName: 'RouteImgs', // 모델 이름
-    tableName: 'routeImgs', // 테이블 이름
-    timestamps: false // createdAt, updatedAt 자동 생성 방지
-  }
-);
+  }, {
+    tableName: 'routeImgs',
+    timestamps: false
+  });
 
-// 관계 설정
-RouteImgs.belongsTo(Sequelize.models.Routes, { foreignKey: 'routeId' });
+  Users.associate = (models) => {
+  RouteImgs.belongsTo(models.Routes, { foreignKey: 'routeId' });
+  };
+  return RouteImgs;
+};
 
-export default RouteImgs;
