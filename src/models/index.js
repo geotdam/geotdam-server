@@ -15,14 +15,14 @@ const db = {};
 
 // ✅ Sequelize 인스턴스 생성
 const sequelize = new Sequelize(
-  config.database,
-  config.username,
-  config.password,
+  environmentConfig.database,  // 환경별 DB 설정 사용
+  environmentConfig.username,
+  environmentConfig.password,
   {
-    host: config.host,
-    dialect: config.dialect,
-    port: config.port,
-    timezone: config.timezone,
+    host: environmentConfig.host,
+    dialect: environmentConfig.dialect,
+    port: environmentConfig.port,
+    timezone: environmentConfig.timezone,
     logging: console.log,
   }
 );
