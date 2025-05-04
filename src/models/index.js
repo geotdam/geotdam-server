@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const env = process.env.NODE_ENV || "development";
-import config from "../config/config.cjs";
+import config from "../../config/config.cjs";
 const environmentConfig = config[env];
 
 const basename = path.basename(__filename);
