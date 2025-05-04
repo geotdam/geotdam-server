@@ -30,9 +30,15 @@ export default (sequelize, DataTypes) => {
     timestamps: false
   });
 
+<<<<<<< HEAD
   Reviews.associate = (models) => {
   Reviews.belongsTo(models.Users, { foreignKey: 'userId' });
   Reviews.belongsTo(models.Routes, { foreignKey: 'routeId' });
   };
+=======
+  Reviews.belongsTo(sequelize.models.users, { foreignKey: 'userId' });
+  Reviews.belongsTo(sequelize.models.routes, { foreignKey: 'routeId' });
+
+>>>>>>> 209d3a7 (fix: sequlize instance 적용)
   return Reviews;
 };

@@ -24,10 +24,16 @@ export default (sequelize, DataTypes) => {
       timestamps: false
     });
   
+<<<<<<< HEAD
     PlaceRoutes.associate = (models) => {
     PlaceRoutes.belongsTo(models.Routes, { foreignKey: 'routeId' });
     PlaceRoutes.belongsTo(models.Places, { foreignKey: 'placeId' });
     };
+=======
+    PlaceRoutes.belongsTo(sequelize.models.routes, { foreignKey: 'routeId' });
+    PlaceRoutes.belongsTo(sequelize.models.places, { foreignKey: 'placeId' });
+  
+>>>>>>> 209d3a7 (fix: sequlize instance 적용)
     return PlaceRoutes;
   };
   

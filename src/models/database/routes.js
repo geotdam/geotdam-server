@@ -30,6 +30,7 @@ export default (sequelize, DataTypes) => {
       timestamps: false
     });
   
+<<<<<<< HEAD
     Routes.associate = (models) => {
     Routes.belongsTo(models.Users, { foreignKey: 'userId' });
     Routes.hasMany(models.RouteImgs, { foreignKey: 'routeId',
@@ -49,6 +50,26 @@ export default (sequelize, DataTypes) => {
       onUpdate: 'CASCADE'
      });
     Routes.hasMany(models.Places, { foreignKey: 'routeId',
+=======
+    Routes.belongsTo(sequelize.models.users, { foreignKey: 'userId' });
+    Routes.hasMany(sequelize.models.routeImgs, { foreignKey: 'routeId',
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+     });
+    Routes.hasMany(sequelize.models.routeLikes, { foreignKey: 'routeId',
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+     });
+    Routes.hasMany(sequelize.models.routeBookmarks, { foreignKey: 'routeId',
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+     });
+    Routes.hasMany(sequelize.models.reviews, { foreignKey: 'routeId',
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+     });
+    Routes.hasMany(sequelize.models.places, { foreignKey: 'routeId',
+>>>>>>> 209d3a7 (fix: sequlize instance 적용)
       onDelete: 'CASCADE',  
       onUpdate: 'CASCADE'
     });

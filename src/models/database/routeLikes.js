@@ -32,9 +32,15 @@ export default (sequelize, DataTypes) => {
     timestamps: false
   });
 
+<<<<<<< HEAD
   RouteLikes.associate = (models) => {
   RouteLikes.belongsTo(models.Users, { foreignKey: 'userId' });
   RouteLikes.belongsTo(models.Routes, { foreignKey: 'routeId' });
   };
+=======
+  RouteLikes.belongsTo(sequelize.models.users, { foreignKey: 'userId' });
+  RouteLikes.belongsTo(sequelize.models.routes, { foreignKey: 'routeId' });
+
+>>>>>>> 209d3a7 (fix: sequlize instance 적용)
   return RouteLikes;
 };
