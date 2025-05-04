@@ -9,6 +9,7 @@ const env = process.env.NODE_ENV || "development";
 import config from "../../config/config.cjs";
 const environmentConfig = config[env];
 
+const __filename = new URL(import.meta.url).pathname; 
 const basename = path.basename(__filename);
 const db = {};
 
