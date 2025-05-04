@@ -45,10 +45,14 @@ const loadModels = async () => {
       db[modelName].associate(db);
     }
   });
-  
+
   // Sequelize 인스턴스와 등록된 모델 export
   db.sequelize = sequelize;
   db.Sequelize = Sequelize;
+
+  // 모델 동기화
+  await db.sequelize.sync({ force: false }); // 기존 테이블은 삭제하지 않고 동기화
+  console.log('모델 동기화 완료');
 };
 
 loadModels().then(() => {
