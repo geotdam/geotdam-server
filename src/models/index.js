@@ -1,5 +1,3 @@
-// src/models/index.js
-
 import fs from "fs";
 import path from "path";
 import { Sequelize } from "sequelize";
@@ -54,8 +52,10 @@ export const initModels = async () => {
   db.sequelize = sequelize;
   db.Sequelize = Sequelize;
 
-  return db;  // 여기에서 db를 반환합니다
+  return db;  // db를 반환
 };
 
+// initModels를 호출하고 반환된 db를 export
+const db = await initModels();  // 비동기 호출을 위해 top-level await 사용
 
-export default db;  
+export default db;  // 반환된 db를 export
