@@ -3,8 +3,11 @@ const path = require("path");
 const Sequelize = require("sequelize");
 const dbConfig = require("../config/config.cjs");
 
+const env = process.env.NODE_ENV || 'development';
+const config = require("../config/config.cjs")[env];
+
 const basename = path.basename(__filename);
-const db = {};
+const db = require("./models");
 
 // ✅ Sequelize 인스턴스 생성
 const sequelize = new Sequelize(
