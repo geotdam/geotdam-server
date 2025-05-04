@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
-import { sequelize } from "./models"; 
+import { sequelize } from './models/index.js';
 
 dotenv.config();
 
