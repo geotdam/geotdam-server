@@ -46,7 +46,7 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 // ✅ 데이터베이스와 모델 동기화
-sequelize.sync({ force: false })  // 테이블을 삭제하지 않고 변경사항을 적용 
+sequelize.sync({ force: true })  // 테이블을 삭제하지 않고 변경사항을 적용 
   .then(() => {
     console.log("Database synced successfully.");
   })
