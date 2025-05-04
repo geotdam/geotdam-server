@@ -19,7 +19,7 @@ const sequelize = new Sequelize(
     dialect: config.dialect,
     port: config.port,
     timezone: config.timezone,
-    logging: true,
+    logging: console.log,
   }
 );
 
