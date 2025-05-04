@@ -28,9 +28,7 @@ export default (sequelize, DataTypes) => {
     timestamps: false
   });
 
-  RouteImgs.associate = function(models) {
-    RouteImgs.belongsTo(models.routes, { foreignKey: 'routeId' });
-  };
+  RouteImgs.belongsTo(models.routes, { foreignKey: 'routeId' });
 
   return RouteImgs;
 };

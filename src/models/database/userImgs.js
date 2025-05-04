@@ -20,9 +20,7 @@ export default (sequelize, DataTypes) => {
     timestamps: false
   });
 
-  UserImgs.associate = function(models) {
-    UserImgs.belongsTo(models.users, { foreignKey: 'userId' });
-  };
-
+  UserImgs.belongsTo(sequelize.models.Users, { foreignKey: 'userId' });
+  
   return UserImgs;
 };

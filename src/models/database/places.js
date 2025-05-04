@@ -25,14 +25,14 @@ export default (sequelize, DataTypes) => {
       timestamps: false
     });
   
-    Places.associate = function(models) {
-      Places.hasMany(models.placeImgs, { foreignKey: 'placeId' });
-      Places.belongsToMany(models.routes, {
-        through: models.placeRoutes,
-        foreignKey: 'placeId',
-        otherKey: 'routeId'
-      });
-    };
+    Places.hasMany(models.placeImgs, { foreignKey: 'placeId',
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+     });
+    Places.hasMany(models.routes, {  foreignKey: 'placeId',
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+    });
   
     return Places;
   };

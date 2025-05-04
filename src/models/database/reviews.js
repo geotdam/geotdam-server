@@ -30,10 +30,8 @@ export default (sequelize, DataTypes) => {
     timestamps: false
   });
 
-  Reviews.associate = function(models) {
-    Reviews.belongsTo(models.users, { foreignKey: 'userId' });
-    Reviews.belongsTo(models.routes, { foreignKey: 'routeId' });
-  };
+  Reviews.belongsTo(models.users, { foreignKey: 'userId' });
+  Reviews.belongsTo(models.routes, { foreignKey: 'routeId' });
 
   return Reviews;
 };

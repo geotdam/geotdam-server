@@ -34,14 +34,30 @@ export default (sequelize, DataTypes) => {
       timestamps: false
     });
   
-    Users.associate = function(models) {
-      Users.hasOne(models.socialLogins, { foreignKey: 'userId' });
-      Users.hasOne(models.userImgs, { foreignKey: 'userId' });
-      Users.hasMany(models.routes, { foreignKey: 'userId' });
-      Users.hasMany(models.routeLikes, { foreignKey: 'userId' });
-      Users.hasMany(models.routeBookmarks, { foreignKey: 'userId' });
-      Users.hasMany(models.reviews, { foreignKey: 'userId' });
-    };
+    Users.hasOne(models.socialLogins, { foreignKey: 'userId',
+          onDelete: 'CASCADE',  
+          onUpdate: 'CASCADE'
+     });
+    Users.hasOne(models.userImgs, { foreignKey: 'userId',
+          onDelete: 'CASCADE',  
+          onUpdate: 'CASCADE'
+     });
+    Users.hasMany(models.routes, { foreignKey: 'userId' ,
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+    });
+    Users.hasMany(models.routeLikes, { foreignKey: 'userId',
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+     });
+    Users.hasMany(models.routeBookmarks, { foreignKey: 'userId',
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+     });
+    Users.hasMany(models.reviews, { foreignKey: 'userId',
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+     });
   
     return Users;
   };
