@@ -32,8 +32,8 @@ const modelFiles = fs.readdirSync(path.join(__dirname, 'database'))
   .filter((file) => file.indexOf('.') !== 0 && file.slice(-3) === '.js');
 
 for (const file of modelFiles) {
-  const model = await import(path.join(__dirname, 'database', file));  // 동적 import 사용
-  db[model.default.name] = model.default(sequelize, Sequelize.DataTypes);  // 모델 초기화
+  const model = require(path.join(__dirname, 'database', file)).default;  // 동기적으로 require 사용
+  db[model.name] = model(sequelize, Sequelize.DataTypes);  // 모델 초기화
 }
 
 // ✅ 모델 간 관계 설정
@@ -47,4 +47,4 @@ Object.keys(db).forEach((modelName) => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-export default db;  
+export default db;
