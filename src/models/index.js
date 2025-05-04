@@ -44,6 +44,7 @@ const modelFiles = [
 modelFiles.forEach((file) => {
   import(path.join(__dirname, 'database', file)).then((model) => {
     const modelInstance = model.default(sequelize, Sequelize.DataTypes);
+    console.log(`Model loaded: ${file}`); 
     db[modelInstance.name] = modelInstance;
   });
 });

@@ -60,6 +60,7 @@ export default (sequelize, DataTypes) => {
       onUpdate: 'CASCADE'
      });
     };
+    console.log(sequelize.models.User);  
     return Users;
   };
   
