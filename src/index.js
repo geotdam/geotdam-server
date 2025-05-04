@@ -1,7 +1,8 @@
 import dotenv from "dotenv"; 
 import express from "express";
 import cors from "cors";
-import db from './models/index.js';  // models/index.js에서 모델과 Sequelize 인스턴스를 가져옴
+import db from './models/index.js';
+import path from "path"; 
 dotenv.config();
 
 const app = express();
