@@ -1,5 +1,5 @@
 //루트 북마크
-export default (sequelize, DataTypes, models) => {
+export default (sequelize, DataTypes) => {
   const RouteBookmarks = sequelize.define('RouteBookmarks', {
     bookmarkId: {
       type: DataTypes.BIGINT,
@@ -32,8 +32,8 @@ export default (sequelize, DataTypes, models) => {
     timestamps: false
   });
 
-  RouteBookmarks.belongsTo(models.users, { foreignKey: 'userId' });
-  RouteBookmarks.belongsTo(models.routes, { foreignKey: 'routeId' });
+  RouteBookmarks.belongsTo(sequelize.models.users, { foreignKey: 'userId' });
+  RouteBookmarks.belongsTo(sequelize.models.routes, { foreignKey: 'routeId' });
 
   return RouteBookmarks;
 };

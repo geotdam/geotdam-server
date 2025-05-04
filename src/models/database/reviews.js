@@ -1,5 +1,5 @@
 //리뷰
-export default (sequelize, DataTypes, models) => {
+export default (sequelize, DataTypes) => {
   const Reviews = sequelize.define('Reviews', {
     reviewId: {
       type: DataTypes.BIGINT,
@@ -30,8 +30,8 @@ export default (sequelize, DataTypes, models) => {
     timestamps: false
   });
 
-  Reviews.belongsTo(models.users, { foreignKey: 'userId' });
-  Reviews.belongsTo(models.routes, { foreignKey: 'routeId' });
+  Reviews.belongsTo(sequelize.models.users, { foreignKey: 'userId' });
+  Reviews.belongsTo(sequelize.models.routes, { foreignKey: 'routeId' });
 
   return Reviews;
 };

@@ -1,5 +1,5 @@
 // 루트 
-export default (sequelize, DataTypes, models) => {
+export default (sequelize, DataTypes) => {
     const Routes = sequelize.define('Routes', {
       routeId: {
         type: DataTypes.BIGINT,
@@ -30,24 +30,24 @@ export default (sequelize, DataTypes, models) => {
       timestamps: false
     });
   
-    Routes.belongsTo(models.users, { foreignKey: 'userId' });
-    Routes.hasMany(models.routeImgs, { foreignKey: 'routeId',
+    Routes.belongsTo(sequelize.models.users, { foreignKey: 'userId' });
+    Routes.hasMany(sequelize.models.routeImgs, { foreignKey: 'routeId',
       onDelete: 'CASCADE',  
       onUpdate: 'CASCADE'
      });
-    Routes.hasMany(models.routeLikes, { foreignKey: 'routeId',
+    Routes.hasMany(sequelize.models.routeLikes, { foreignKey: 'routeId',
       onDelete: 'CASCADE',  
       onUpdate: 'CASCADE'
      });
-    Routes.hasMany(models.routeBookmarks, { foreignKey: 'routeId',
+    Routes.hasMany(sequelize.models.routeBookmarks, { foreignKey: 'routeId',
       onDelete: 'CASCADE',  
       onUpdate: 'CASCADE'
      });
-    Routes.hasMany(models.reviews, { foreignKey: 'routeId',
+    Routes.hasMany(sequelize.models.reviews, { foreignKey: 'routeId',
       onDelete: 'CASCADE',  
       onUpdate: 'CASCADE'
      });
-    Routes.hasMany(models.places, { foreignKey: 'routeId',
+    Routes.hasMany(sequelize.models.places, { foreignKey: 'routeId',
       onDelete: 'CASCADE',  
       onUpdate: 'CASCADE'
     });

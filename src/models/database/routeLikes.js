@@ -1,5 +1,5 @@
 //루트 좋아요
-export default (sequelize, DataTypes, models) => {
+export default (sequelize, DataTypes) => {
   const RouteLikes = sequelize.define('RouteLikes', {
     likeId: {
       type: DataTypes.BIGINT,
@@ -32,8 +32,8 @@ export default (sequelize, DataTypes, models) => {
     timestamps: false
   });
 
-  RouteLikes.belongsTo(models.users, { foreignKey: 'userId' });
-  RouteLikes.belongsTo(models.routes, { foreignKey: 'routeId' });
+  RouteLikes.belongsTo(sequelize.models.users, { foreignKey: 'userId' });
+  RouteLikes.belongsTo(sequelize.models.routes, { foreignKey: 'routeId' });
 
   return RouteLikes;
 };

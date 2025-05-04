@@ -1,5 +1,5 @@
 //장소 루트
-export default (sequelize, DataTypes, models) => {
+export default (sequelize, DataTypes) => {
     const PlaceRoutes = sequelize.define('PlaceRoutes', {
       placeRouteId: {
         type: DataTypes.BIGINT,
@@ -24,8 +24,8 @@ export default (sequelize, DataTypes, models) => {
       timestamps: false
     });
   
-    PlaceRoutes.belongsTo(models.routes, { foreignKey: 'routeId' });
-    PlaceRoutes.belongsTo(models.places, { foreignKey: 'placeId' });
+    PlaceRoutes.belongsTo(sequelize.models.routes, { foreignKey: 'routeId' });
+    PlaceRoutes.belongsTo(sequelize.models.places, { foreignKey: 'placeId' });
   
     return PlaceRoutes;
   };

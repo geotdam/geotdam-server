@@ -1,5 +1,5 @@
 //소셜 로그인 
-export default (sequelize, DataTypes, models) => {
+export default (sequelize, DataTypes) => {
   const SocialLogins = sequelize.define('SocialLogins', {
     socialLoginId: {
       type: DataTypes.BIGINT,
@@ -22,7 +22,7 @@ export default (sequelize, DataTypes, models) => {
     timestamps: false
   });
 
-  SocialLogins.belongsTo(models.users, { foreignKey: 'userId' });
+  SocialLogins.belongsTo(sequelize.models.users, { foreignKey: 'userId' });
 
   return SocialLogins;
 };

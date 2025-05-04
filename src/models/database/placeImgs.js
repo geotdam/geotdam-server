@@ -1,5 +1,5 @@
 //장소 이미지 
-export default (sequelize, DataTypes, models) => {
+export default (sequelize, DataTypes) => {
     const PlaceImgs = sequelize.define('PlaceImgs', {
       placeImgId: {
         type: DataTypes.BIGINT,
@@ -28,7 +28,7 @@ export default (sequelize, DataTypes, models) => {
       timestamps: false
     });
   
-    PlaceImgs.belongsTo(models.places, { foreignKey: 'placeId' });
+    PlaceImgs.belongsTo(sequelize.models.places, { foreignKey: 'placeId' });
   
     return PlaceImgs;
   };
