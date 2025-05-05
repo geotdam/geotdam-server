@@ -64,6 +64,7 @@ jobs:
             cd /home/oculo0204/apps/geotdam-server && \
 
             echo '🔄 Git pull 시작' && \
+            sudo chmod -R 777 .git && \
             git pull origin main || echo '⚠️ Git pull 실패 또는 안전 디렉토리 이슈' && \
 
             echo '✅ Git 안전 디렉토리 설정' && \
@@ -73,8 +74,11 @@ jobs:
             sudo npm install --unsafe-perm && \
 
             echo '📂 DB 마이그레이션 실행' && \
-            npx sequelize-cli db:migrate || echo '⚠️ Migrate failed or not needed, proceeding...' && \
-
+            if [ -f /home/oculo0204/apps/geotdam-server/config/config.js ]; then \
+              npx sequelize-cli db:migrate --config /home/oculo0204/apps/geotdam-server/config/config.js || echo '⚠️ Migrate failed or not needed, proceeding...'; \
+            else \
+              echo '⚠️ config.js 파일이 없습니다. 마이그레이션을 건너뜁니다.'; \
+            fi && \
             echo '🔓 로그 파일 권한 설정' && \
             sudo touch /home/oculo0204/apps/geotdam-server/app.log && \
             sudo chmod 777 /home/oculo0204/apps/geotdam-server/app.log && \
