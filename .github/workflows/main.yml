@@ -63,7 +63,7 @@ jobs:
             echo '📄 최근 로그:' && \
             tail -n 10 /home/oculo0204/apps/geotdam-server/app.log || echo '🚨 로그 확인 실패'
 
-            echo '✅ 앱 실행 명령 전달 완료'
+            echo '✅ 앱 실행 명령 전달 완료!'
             "
 
 
