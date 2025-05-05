@@ -54,14 +54,34 @@ jobs:
     # GCP 서버에 SSH로 접속해서 배포
       - name: SSH to GCP instance and deploy
         run: |
+          echo "🔧 Setting GCP project..."
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+
+          echo "🚀 Connecting to GCP instance and starting deployment..."
           gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --zone ${{ secrets.GCP_ZONE }} --command "
+            echo '📁 이동: /home/oculo0204/apps/geotdam-server' && \
             cd /home/oculo0204/apps/geotdam-server && \
+
+            echo '🔄 Git pull 시작' && \
             git pull origin main && \
+
+            echo '✅ Git 안전 디렉토리 설정' && \
             git config --global --add safe.directory /home/oculo0204/apps/geotdam-server && \
+
+            echo '📦 npm install 시작' && \
             npm install && \
-            npx sequelize-cli db:migrate || echo 'Migrate failed or not needed, proceeding to start app' && \
+
+            echo '📂 DB 마이그레이션 실행' && \
+            npx sequelize-cli db:migrate || echo '⚠️ Migrate failed or not needed, proceeding...' && \
+
+            echo '🔓 로그 파일 권한 설정' && \
             sudo chmod 777 /home/oculo0204/apps/geotdam-server/app.log && \
-            nohup npm start > /home/oculo0204/apps/geotdam-server/app.log 2>&1 &"
+
+            echo '🚀 앱 시작 중...' && \
+            nohup npm start > /home/oculo0204/apps/geotdam-server/app.log 2>&1 & && \
+
+            echo '✅ 앱 실행 완료'
+          "
+
 
 
