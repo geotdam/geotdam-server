@@ -1,15 +1,12 @@
 name: CI/CD Workflow
 
-# workflow를 재실행하는 트리거
 on:
   push:
     branches:
       - main
-      
-# 재실행되면 수행할 작업들
-jobs:
 
-# 작업1: 테스트코드 검사
+jobs:
+  # 작업1: 테스트 코드 검사
   test:
     runs-on: ubuntu-latest
     env:
@@ -21,9 +18,9 @@ jobs:
       PORT: ${{ secrets.PORT }}
       NODE_ENV: ${{ secrets.NODE_ENV }}
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4.1.7
-        
+
       - name: Setup Node.js environment
         uses: actions/setup-node@v4.0.3
         with:
@@ -31,12 +28,12 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        
-      - name: Run test
+
+      - name: Run tests
         run: npm test
 
-# 작업2: 빌드
-  build:
+  # 작업2: GCP 배포
+  deploy:
     needs: test
     runs-on: ubuntu-latest
     env:
@@ -48,60 +45,15 @@ jobs:
       PORT: ${{ secrets.PORT }}
       NODE_ENV: ${{ secrets.NODE_ENV }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.7
-
-      - name: Docker Setup Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v3.6.1
+      # GCP 인증
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v0.6.0
         with:
-          path: /temp/.build-cache
-          key: ${{runner.os}}-buildx-${{github.sha}}
-          restore-keys: |
-            ${{runner.os}}-buildx-
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-      # 이미지를 로컬에서 다운로드합니다.
-      - name: Pull Docker image from local registry
+      # GCP 서버에 SSH로 접속해서 배포
+      - name: SSH to GCP instance and deploy
         run: |
-          docker pull gracious_hawking/d53c7887eb4b/my-web-image:latest  # 해당 이미지를 가져옵니다.
-        
-      - name: Verify Docker image
-        run: |
-          docker images  # 로컬에서 가져온 이미지가 있는지 확인
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+          gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --zone ${{ secrets.GCP_ZONE }} --command "cd /path/to/your/app && git pull origin main && npm install && npx sequelize-cli db:migrate && pm2 restart your-app"
 
-# 작업3: 배포
-  deploy:
-    needs: build
-    name: Deploy
-    runs-on: [self-hosted, sangddong]
-    env:
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DB_HOST: ${{ secrets.DB_HOST }}
-      DB_PORT: ${{ secrets.DB_PORT }}
-      PORT: ${{ secrets.PORT }}
-      NODE_ENV: ${{ secrets.NODE_ENV }}
-    steps:
-      - name: Login to Github container registry
-        uses: docker/login-action@v3.3.0
-        with: 
-          registry: ghcr.io
-          username: oculo0204
-          password: ${{secrets.GHCR_TOKEN}}
-
-      - name: Verify Docker Login
-        run: |
-          echo ${{secrets.GHCR_TOKEN}} | sudo docker login ghcr.io -u ${{github.actor}} --password-stdin
-          
-      - name: Docker run
-        run: |
-          sudo docker stop temp-container-name || true
-          sudo docker rm temp-container-name || true
-          sudo docker rmi ghcr.io/sangddong/my-image:latest || true
-          sudo docker run -d -p 80:3001 \
-          --name temp-container-name \
-          --restart always \
-          -e PORT=${{ secrets.PORT }} \
-          -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
-          ghcr.io/sangddong/my-image:latest
