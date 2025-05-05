@@ -70,7 +70,7 @@ jobs:
             git config --global --add safe.directory /home/oculo0204/apps/geotdam-server && \
 
             echo '📦 npm install 시작' && \
-            npm install && \
+            sudo npm install --unsafe-perm && \
 
             echo '📂 DB 마이그레이션 실행' && \
             npx sequelize-cli db:migrate || echo '⚠️ Migrate failed or not needed, proceeding...' && \
@@ -80,7 +80,7 @@ jobs:
             sudo chmod 777 /home/oculo0204/apps/geotdam-server/app.log && \
 
             echo '🚀 앱 시작 중...' && \
-            nohup npm start > /home/oculo0204/apps/geotdam-server/app.log 2>&1 &
+            sudo nohup npm start > /home/oculo0204/apps/geotdam-server/app.log 2>&1 &
 
             sleep 3 && \
             echo '📄 최근 로그:' && \
