@@ -1,5 +1,5 @@
 //유저 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
     const Users = sequelize.define('Users', {
       userId: {
         type: DataTypes.BIGINT,
@@ -34,15 +34,32 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false
     });
   
-    Users.associate = function(models) {
-      Users.hasOne(models.socialLogins, { foreignKey: 'userId' });
-      Users.hasOne(models.userImgs, { foreignKey: 'userId' });
-      Users.hasMany(models.routes, { foreignKey: 'userId' });
-      Users.hasMany(models.routeLikes, { foreignKey: 'userId' });
-      Users.hasMany(models.routeBookmarks, { foreignKey: 'userId' });
-      Users.hasMany(models.reviews, { foreignKey: 'userId' });
+    Users.associate = (models) => {
+    Users.hasOne(models.SocialLogins, { foreignKey: 'userId',
+          onDelete: 'CASCADE',  
+          onUpdate: 'CASCADE'
+     });
+    Users.hasOne(models.UserImgs, { foreignKey: 'userId',
+          onDelete: 'CASCADE',  
+          onUpdate: 'CASCADE'
+     });
+    Users.hasMany(models.Routes, { foreignKey: 'userId' ,
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+    });
+    Users.hasMany(models.RouteLikes, { foreignKey: 'userId',
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+     });
+    Users.hasMany(models.RouteBookmarks, { foreignKey: 'userId',
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+     });
+    Users.hasMany(models.Reviews, { foreignKey: 'userId',
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+     });
     };
-  
     return Users;
   };
   
