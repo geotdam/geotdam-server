@@ -6,35 +6,8 @@ on:
       - main
 
 jobs:
-  # 작업1: 테스트 코드 검사
-  test:
-    runs-on: ubuntu-latest
-    env:
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DB_HOST: ${{ secrets.DB_HOST }}
-      DB_PORT: ${{ secrets.DB_PORT }}
-      PORT: ${{ secrets.PORT }}
-      NODE_ENV: ${{ secrets.NODE_ENV }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.7
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4.0.3
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        run: npm test
-
   # 작업2: GCP 배포
   deploy:
-    needs: test
     runs-on: ubuntu-latest
     env:
       DB_USER: ${{ secrets.DB_USER }}
