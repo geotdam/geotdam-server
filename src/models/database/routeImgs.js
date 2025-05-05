@@ -1,5 +1,5 @@
 //루트 이미지
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const RouteImgs = sequelize.define('RouteImgs', {
     routeImgId: {
       type: DataTypes.BIGINT,
@@ -28,10 +28,9 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: false
   });
 
-  RouteImgs.associate = function(models) {
-    RouteImgs.belongsTo(models.routes, { foreignKey: 'routeId' });
+  RouteImgs.associate = (models) => {
+  RouteImgs.belongsTo(models.Routes, { foreignKey: 'routeId' });
   };
-
   return RouteImgs;
 };
 

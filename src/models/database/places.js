@@ -1,5 +1,5 @@
 //장소
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
     const Places = sequelize.define('Places', {
       placeId: {
         type: DataTypes.BIGINT,
@@ -25,15 +25,16 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false
     });
   
-    Places.associate = function(models) {
-      Places.hasMany(models.placeImgs, { foreignKey: 'placeId' });
-      Places.belongsToMany(models.routes, {
-        through: models.placeRoutes,
-        foreignKey: 'placeId',
-        otherKey: 'routeId'
-      });
+    Places.associate = (models) => {
+    Places.hasMany(models.PlaceImgs, { foreignKey: 'placeId',
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+     });
+    Places.hasMany(models.Routes, {  foreignKey: 'placeId',
+      onDelete: 'CASCADE',  
+      onUpdate: 'CASCADE'
+    });
     };
-  
     return Places;
   };
   
