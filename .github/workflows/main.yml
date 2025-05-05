@@ -56,9 +56,9 @@ jobs:
         run: |
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
           gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --zone ${{ secrets.GCP_ZONE }} --command "
-            echo \$HOME && \
             cd /home/oculo0204/apps/geotdam-server && \
             git pull origin main && \
             npm install && \
-            npx sequelize-cli db:migrate && \
-            nohup npm start > ~/apps/geotdam-server/app.log 2>&1 &"
+            npx sequelize-cli db:migrate || echo 'Migrate failed or just not changed, proceeding to start app' && \
+            nohup npm start > /home/oculo0204/apps/geotdam-server/app.log 2>&1 &"
+
