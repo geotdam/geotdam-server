@@ -48,9 +48,9 @@ jobs:
 
             echo '📂 DB 마이그레이션 실행' && \
             if [ -f /home/oculo0204/apps/geotdam-server/config/config.js ]; then \
-              npx sequelize-cli db:migrate --config /home/oculo0204/apps/geotdam-server/config/config.js || echo '⚠️ Migrate failed or not needed, proceeding...'; \
+              npx sequelize-cli db:migrate --config /home/oculo0204/apps/geotdam-server/config/config.cjs || echo '⚠️ Migrate failed or not needed, proceeding...'; \
             else \
-              echo '⚠️ config.js 파일이 없습니다. 마이그레이션을 건너뜁니다.'; \
+              echo '⚠️ config.cjs 파일이 없습니다. 마이그레이션을 건너뜁니다.'; \
             fi && \
             echo '🔓 로그 파일 권한 설정' && \
             sudo touch /home/oculo0204/apps/geotdam-server/app.log && \
