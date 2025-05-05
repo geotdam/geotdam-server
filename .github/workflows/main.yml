@@ -58,7 +58,10 @@ jobs:
           gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --zone ${{ secrets.GCP_ZONE }} --command "
             cd /home/oculo0204/apps/geotdam-server && \
             git pull origin main && \
+            git config --global --add safe.directory /home/oculo0204/apps/geotdam-server && \
             npm install && \
-            npx sequelize-cli db:migrate || echo 'Migrate failed or just not changed, proceeding to start app' && \
+            npx sequelize-cli db:migrate || echo 'Migrate failed or not needed, proceeding to start app' && \
+            sudo chmod 777 /home/oculo0204/apps/geotdam-server/app.log && \
             nohup npm start > /home/oculo0204/apps/geotdam-server/app.log 2>&1 &"
+
 
