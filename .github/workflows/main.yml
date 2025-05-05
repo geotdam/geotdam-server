@@ -78,7 +78,7 @@ jobs:
             sudo chmod 777 /home/oculo0204/apps/geotdam-server/app.log && \
 
             echo '🚀 앱 시작 중...' && \
-            nohup npm start > /home/oculo0204/apps/geotdam-server/app.log 2>&1 & && \
+            nohup npm start > /home/oculo0204/apps/geotdam-server/app.log 2>&1 & \
 
             echo '✅ 앱 실행 완료'
           "
