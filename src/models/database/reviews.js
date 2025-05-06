@@ -1,5 +1,5 @@
 //리뷰
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Reviews = sequelize.define('Reviews', {
     reviewId: {
       type: DataTypes.BIGINT,
@@ -30,10 +30,9 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: false
   });
 
-  Reviews.associate = function(models) {
-    Reviews.belongsTo(models.users, { foreignKey: 'userId' });
-    Reviews.belongsTo(models.routes, { foreignKey: 'routeId' });
+  Reviews.associate = (models) => {
+  Reviews.belongsTo(models.Users, { foreignKey: 'userId' });
+  Reviews.belongsTo(models.Routes, { foreignKey: 'routeId' });
   };
-
   return Reviews;
 };

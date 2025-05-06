@@ -1,48 +1,63 @@
-const fs = require("fs");
-const path = require("path");
-const Sequelize = require("sequelize");
-const dbConfig = require("../config/config.js");
+import fs from "fs";
+import path from "path";
+import { Sequelize } from "sequelize";
+import dotenv from "dotenv";
 
-const basename = path.basename(__filename);
+dotenv.config();
+
+const env = process.env.NODE_ENV || "development";
+import config from "../../config/config.cjs";
+const environmentConfig = config[env];
+
+const __filename = new URL(import.meta.url).pathname; 
+const __dirname = path.dirname(__filename);
 const db = {};
 
-// ✅ Sequelize 인스턴스 생성
+// Sequelize 인스턴스 생성
 const sequelize = new Sequelize(
-  dbConfig.database,
-  dbConfig.username,
-  dbConfig.password,
+  environmentConfig.database, 
+  environmentConfig.username,
+  environmentConfig.password,
   {
-    host: dbConfig.host,
-    dialect: dbConfig.dialect,
-    port: dbConfig.port,
-    timezone: dbConfig.timezone,
-    logging: dbConfig.logging,
+    host: environmentConfig.host,
+    dialect: environmentConfig.dialect,
+    port: environmentConfig.port,
+    timezone: environmentConfig.timezone,
+    logging: console.log,
   }
 );
 
-// ✅ models 폴더 내 .js 모델 파일 모두 불러오기
-fs.readdirSync(__dirname)
-  .filter((file) => {
-    return (
-      file.indexOf(".") !== 0 &&
-      file !== basename &&
-      file.slice(-3) === ".js"
-    );
-  })
-  .forEach((file) => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
+// 모델 파일 순서 수동으로 지정
+const modelFiles = [
+  'users.js',
+  'socialLogins.js',
+  'places.js',
+  'routes.js',
+  'reviews.js',
+  'routeBookmarks.js',
+  'routeImgs.js',
+  'routeLikes.js',
+  'userImgs.js',
+];
 
-// ✅ 모델 간 관계 설정
+// 각 모델을 순차적으로 불러와서 db 객체에 추가
+modelFiles.forEach((file) => {
+  import(path.join(__dirname, 'database', file)).then((model) => {
+    const modelInstance = model.default(sequelize, Sequelize.DataTypes);
+    console.log(`Model loaded: ${file}`); 
+    db[modelInstance.name] = modelInstance;
+  });
+});
+
+// 모델 간 관계 설정 (모든 모델이 로드된 후에 설정)
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
 });
 
-// ✅ Sequelize 인스턴스와 등록된 모델 export
+// Sequelize 인스턴스와 등록된 모델 export
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-module.exports = db;
+export default db;

@@ -1,5 +1,5 @@
 //유저 이미지 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const UserImgs = sequelize.define('UserImgs', {
     userProfileId: {
       type: DataTypes.BIGINT,
@@ -20,9 +20,8 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: false
   });
 
-  UserImgs.associate = function(models) {
-    UserImgs.belongsTo(models.users, { foreignKey: 'userId' });
+  UserImgs.associate = (models) => {
+  UserImgs.belongsTo(models.Users, { foreignKey: 'userId' });
   };
-
   return UserImgs;
 };

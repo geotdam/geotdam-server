@@ -1,9 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
-const { sequelize } = require('./models'); // 시퀄라이즈 연결
-const routes = require('./database/routes'); // 라우터들
-
+import db from './models/index.js'; 
 dotenv.config();
 
 const app = express();
@@ -20,16 +18,14 @@ app.get("/", (req, res) => {
 });
 
 
-app.listen(port, () => {
-  console.log(`✅ Example app listening on port ${port}`);
-});
-
-// DB 연결
-sequelize.sync({ force: false })  // true로 하면 테이블 초기화됨 (주의)
+// 데이터베이스 동기화 후 서버 실행
+db.sequelize.sync({ force: false })  // 기존 테이블은 삭제하지 않고 동기화
   .then(() => {
-    console.log('✅ DB connected');
-    app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
+    console.log("✅ Database synced successfully.");
+    app.listen(port, () => {
+      console.log(`✅ Example app listening on port ${port}`);
+    });
   })
-  .catch((err) => {
-    console.error('❌ DB connection failed:', err);
+  .catch((error) => {
+    console.error("❌ Error syncing database:", error);
   });

@@ -1,5 +1,5 @@
 //장소 루트
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
     const PlaceRoutes = sequelize.define('PlaceRoutes', {
       placeRouteId: {
         type: DataTypes.BIGINT,
@@ -24,11 +24,10 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false
     });
   
-    PlaceRoutes.associate = function(models) {
-      PlaceRoutes.belongsTo(models.routes, { foreignKey: 'routeId' });
-      PlaceRoutes.belongsTo(models.places, { foreignKey: 'placeId' });
+    PlaceRoutes.associate = (models) => {
+    PlaceRoutes.belongsTo(models.Routes, { foreignKey: 'routeId' });
+    PlaceRoutes.belongsTo(models.Places, { foreignKey: 'placeId' });
     };
-  
     return PlaceRoutes;
   };
   
