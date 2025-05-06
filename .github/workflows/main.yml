@@ -47,7 +47,7 @@ jobs:
             sudo npm install --unsafe-perm && \
 
             echo '📂 DB 마이그레이션 실행' && \
-            if [ -f /home/oculo0204/apps/geotdam-server/config/config.js ]; then \
+            if [ -f /home/oculo0204/apps/geotdam-server/config/config.cjs ]; then \
               npx sequelize-cli db:migrate --config /home/oculo0204/apps/geotdam-server/config/config.cjs || echo '⚠️ Migrate failed or not needed, proceeding...'; \
             else \
               echo '⚠️ config.cjs 파일이 없습니다. 마이그레이션을 건너뜁니다.'; \
