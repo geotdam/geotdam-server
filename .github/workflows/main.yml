@@ -41,10 +41,10 @@ jobs:
             ls -ld /home/oculo0204/apps/geotdam-server && \
 
             echo '🔄 Git pull 시작' && \
-            sudo git pull origin main || echo '⚠️ Git pull 실패 또는 안전 디렉토리 이슈' && \
+            sudo git pull origin main || echo '⚠️ Git pull 실패 또는 안전 디렉토리 이슈' && exit 1;&& \
 
             echo '📦 npm install 시작' && \
-            sudo npm install --unsafe-perm && \
+            sudo npm install --unsafe-perm || { echo '⚠️ npm install 실패'; exit 1; } && \
 
             echo '📂 DB 마이그레이션 실행' && \
             if [ -f /home/oculo0204/apps/geotdam-server/config/config.cjs ]; then \
@@ -57,7 +57,7 @@ jobs:
             sudo chmod 777 /home/oculo0204/apps/geotdam-server/app.log && \
 
             echo '🚀 앱 시작 중...' && \
-            sudo nohup npm start > /home/oculo0204/apps/geotdam-server/app.log 2>&1 & disown
+            sudo nohup npm start > /home/oculo0204/apps/geotdam-server/app.log 2>&1 & disown|| { echo '⚠️ 앱 시작 실패'; exit 1; }
 
             sleep 3 && \
             echo '📄 최근 로그:' && \
