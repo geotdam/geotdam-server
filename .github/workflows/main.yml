@@ -36,9 +36,6 @@ jobs:
             echo '📁 이동: /home/oculo0204/apps/geotdam-server' && \
             cd /home/oculo0204/apps/geotdam-server && \
 
-            echo '✅ Git 안전 디렉토리 설정' && \
-            git config --system --add safe.directory '*' && \
-
             # Git 디렉토리 소유권 확인
             echo '🔑 현재 디렉토리 소유권 확인:' && \
             ls -ld /home/oculo0204/apps/geotdam-server && \
