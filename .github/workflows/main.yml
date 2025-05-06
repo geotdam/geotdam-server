@@ -41,7 +41,7 @@ jobs:
             ls -ld /home/oculo0204/apps/geotdam-server && \
 
             echo '🔄 Git pull 시작' && \
-            sudo git pull origin main || echo '⚠️ Git pull 실패 또는 안전 디렉토리 이슈' && exit 1;&& \
+            sudo git pull origin main || { echo '⚠️ Git pull 실패 또는 안전 디렉토리 이슈'; exit 1; } && \
 
             echo '📦 npm install 시작' && \
             sudo npm install --unsafe-perm || { echo '⚠️ npm install 실패'; exit 1; } && \
