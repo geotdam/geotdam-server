@@ -36,12 +36,11 @@ jobs:
             echo '📁 이동: /home/oculo0204/apps/geotdam-server' && \
             cd /home/oculo0204/apps/geotdam-server && \
 
-            echo '🔄 Git pull 시작' && \
-            sudo chmod -R 777 .git && \
-            sudo git pull origin main || echo '⚠️ Git pull 실패 또는 안전 디렉토리 이슈' && \
-
             echo '✅ Git 안전 디렉토리 설정' && \
             git config --global --add safe.directory /home/oculo0204/apps/geotdam-server && \
+
+            echo '🔄 Git pull 시작' && \
+            sudo git pull origin main || echo '⚠️ Git pull 실패 또는 안전 디렉토리 이슈' && \
 
             echo '📦 npm install 시작' && \
             sudo npm install --unsafe-perm && \
