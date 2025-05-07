@@ -16,14 +16,15 @@ export default (sequelize, DataTypes) => {
       field: 'access_token'
     },
     email: DataTypes.STRING,
-    platform: DataTypes.STRING
+    platform: DataTypes.STRING,
+    allowNull: true
   }, {
     tableName: 'socialLogins',
     timestamps: false
   });
 
   SocialLogins.associate = (models) => {
-  SocialLogins.belongsTo(models.Users, { foreignKey: 'userId' });
+  SocialLogins.belongsTo(models.Users, { foreignKey: 'userId', as: 'User' });
   };
   return SocialLogins;
 };
