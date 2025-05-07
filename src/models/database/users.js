@@ -28,7 +28,18 @@ export default (sequelize, DataTypes) => {
       isLocationShared: {
         type: DataTypes.BOOLEAN,
         field: 'is_location_shared'
-      }
+      },
+      kakaoId: {
+        type: DataTypes.STRING,
+        field: 'kakao_id',
+        unique: true,
+      },
+      email: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: true
+      },
+
     }, {
       tableName: 'users',
       timestamps: false
@@ -36,6 +47,7 @@ export default (sequelize, DataTypes) => {
   
     Users.associate = (models) => {
     Users.hasOne(models.SocialLogins, { foreignKey: 'userId',
+          as: 'SocialLogin',
           onDelete: 'CASCADE',  
           onUpdate: 'CASCADE'
      });
