@@ -23,7 +23,8 @@ module.exports = {
       user_id: {
         type: Sequelize.BIGINT,
         references: { model: 'users', key: 'user_id' },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       access_token: { type: Sequelize.STRING },
       email: { type: Sequelize.STRING },
@@ -36,7 +37,8 @@ module.exports = {
       user_id: {
         type: Sequelize.BIGINT,
         references: { model: 'users', key: 'user_id' },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       image_url: { type: Sequelize.STRING }
     });
@@ -47,13 +49,14 @@ module.exports = {
       user_id: {
         type: Sequelize.BIGINT,
         references: { model: 'users', key: 'user_id' },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       name: { type: Sequelize.STRING },
       description: { type: Sequelize.TEXT },
       avg_rates: { type: Sequelize.FLOAT },
-      created_at: { type: Sequelize.DATE },
-      updated_at: { type: Sequelize.DATE }
+      created_at: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
+      updated_at: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') }
     });
 
     // 5. routeImgs
@@ -62,47 +65,52 @@ module.exports = {
       route_id: {
         type: Sequelize.BIGINT,
         references: { model: 'routes', key: 'route_id' },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       route_img_url: { type: Sequelize.STRING },
-      created_at: { type: Sequelize.DATE },
-      updated_at: { type: Sequelize.DATE }
+      created_at: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
+      updated_at: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') }
     });
 
     // 6. routeLikes
     await queryInterface.createTable('routeLikes', {
       like_id: { type: Sequelize.BIGINT, autoIncrement: true, primaryKey: true },
-      route_id: {
-        type: Sequelize.BIGINT,
-        references: { model: 'routes', key: 'route_id' },
-        onDelete: 'CASCADE'
-      },
       user_id: {
         type: Sequelize.BIGINT,
         references: { model: 'users', key: 'user_id' },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+      },
+      route_id: {
+        type: Sequelize.BIGINT,
+        references: { model: 'routes', key: 'route_id' },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       is_liked: { type: Sequelize.BOOLEAN },
-      created_at: { type: Sequelize.DATE },
-      updated_at: { type: Sequelize.DATE }
+      created_at: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
+      updated_at: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') }
     });
 
     // 7. routeBookmarks
     await queryInterface.createTable('routeBookmarks', {
       bookmark_id: { type: Sequelize.BIGINT, autoIncrement: true, primaryKey: true },
-      route_id: {
-        type: Sequelize.BIGINT,
-        references: { model: 'routes', key: 'route_id' },
-        onDelete: 'CASCADE'
-      },
       user_id: {
         type: Sequelize.BIGINT,
         references: { model: 'users', key: 'user_id' },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+      },
+      route_id: {
+        type: Sequelize.BIGINT,
+        references: { model: 'routes', key: 'route_id' },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       is_bookmarked: { type: Sequelize.BOOLEAN },
-      created_at: { type: Sequelize.DATE },
-      updated_at: { type: Sequelize.DATE }
+      created_at: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
+      updated_at: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') }
     });
 
     // 8. reviews
@@ -111,17 +119,19 @@ module.exports = {
       route_id: {
         type: Sequelize.BIGINT,
         references: { model: 'routes', key: 'route_id' },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       user_id: {
         type: Sequelize.BIGINT,
         references: { model: 'users', key: 'user_id' },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       comment: { type: Sequelize.TEXT },
       rates: { type: Sequelize.FLOAT },
-      created_at: { type: Sequelize.DATE },
-      updated_at: { type: Sequelize.DATE }
+      created_at: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
+      updated_at: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') }
     });
 
     // 9. places
@@ -132,8 +142,8 @@ module.exports = {
       location: { type: Sequelize.TEXT },
       address: { type: Sequelize.TEXT },
       sequence: { type: Sequelize.INTEGER },
-      created_at: { type: Sequelize.DATE },
-      updated_at: { type: Sequelize.DATE }
+      created_at: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
+      updated_at: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') }
     });
 
     // 10. placeImgs
@@ -142,25 +152,28 @@ module.exports = {
       place_id: {
         type: Sequelize.BIGINT,
         references: { model: 'places', key: 'place_id' },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       place_img_url: { type: Sequelize.STRING },
-      created_at: { type: Sequelize.DATE },
-      updated_at: { type: Sequelize.DATE }
+      created_at: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
+      updated_at: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') }
     });
 
     // 11. placeRoutes
     await queryInterface.createTable('placeRoutes', {
       place_route_id: { type: Sequelize.BIGINT, autoIncrement: true, primaryKey: true },
-      place_id: {
-        type: Sequelize.BIGINT,
-        references: { model: 'places', key: 'place_id' },
-        onDelete: 'CASCADE'
-      },
       route_id: {
         type: Sequelize.BIGINT,
         references: { model: 'routes', key: 'route_id' },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+      },
+      place_id: {
+        type: Sequelize.BIGINT,
+        references: { model: 'places', key: 'place_id' },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       is_primary_place: { type: Sequelize.BOOLEAN }
     });

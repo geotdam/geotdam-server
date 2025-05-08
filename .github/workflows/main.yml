@@ -36,28 +36,28 @@ jobs:
             echo '📁 이동: /home/oculo0204/apps/geotdam-server' && \
             cd /home/oculo0204/apps/geotdam-server && \
 
-            echo '🔄 Git pull 시작' && \
-            sudo chmod -R 777 .git && \
-            git pull origin main || echo '⚠️ Git pull 실패 또는 안전 디렉토리 이슈' && \
+            # Git 디렉토리 소유권 확인
+            echo '🔑 현재 디렉토리 소유권 확인:' && \
+            ls -ld /home/oculo0204/apps/geotdam-server && \
 
-            echo '✅ Git 안전 디렉토리 설정' && \
-            git config --global --add safe.directory /home/oculo0204/apps/geotdam-server && \
+            echo '🔄 Git pull 시작' && \
+            sudo git pull origin main || { echo '⚠️ Git pull 실패 또는 안전 디렉토리 이슈'; exit 1; } && \
 
             echo '📦 npm install 시작' && \
-            sudo npm install --unsafe-perm && \
+            sudo npm install --unsafe-perm || { echo '⚠️ npm install 실패'; exit 1; } && \
 
             echo '📂 DB 마이그레이션 실행' && \
-            if [ -f /home/oculo0204/apps/geotdam-server/config/config.js ]; then \
+            if [ -f /home/oculo0204/apps/geotdam-server/config/config.cjs ]; then \
               npx sequelize-cli db:migrate --config /home/oculo0204/apps/geotdam-server/config/config.cjs || echo '⚠️ Migrate failed or not needed, proceeding...'; \
             else \
-              echo '⚠️ config.cjs 파일이 없습니다. 마이그레이션을 건너뜁니다.'; \
+              echo '⚠️ config.cjs 파일이 없습니다. 마이그레이션을 건너뜁니다.'&& exit 1; \
             fi && \
             echo '🔓 로그 파일 권한 설정' && \
             sudo touch /home/oculo0204/apps/geotdam-server/app.log && \
             sudo chmod 777 /home/oculo0204/apps/geotdam-server/app.log && \
 
             echo '🚀 앱 시작 중...' && \
-            sudo nohup npm start > /home/oculo0204/apps/geotdam-server/app.log 2>&1 & disown
+            sudo nohup npm start > /home/oculo0204/apps/geotdam-server/app.log 2>&1 & disown|| { echo '⚠️ 앱 시작 실패'; exit 1; }
 
             sleep 3 && \
             echo '📄 최근 로그:' && \
