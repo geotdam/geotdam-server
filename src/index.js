@@ -3,6 +3,9 @@ import express from "express";
 import cors from "cors";
 import db from './models/index.js'; 
 import authRoutes from './routes/auth/auth.routes.js';
+import { createServer } from "http";
+import { Server } from "socket.io";
+import locationSocket from './sockets/locationSocket.js';
 
 dotenv.config();
 
@@ -19,6 +22,8 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+// 소켓 설정 등록
+locationSocket(io);
 
 // 데이터베이스 동기화 후 서버 실행
 db.sequelize.sync({ force: false })  // 기존 테이블은 삭제하지 않고 동기화
