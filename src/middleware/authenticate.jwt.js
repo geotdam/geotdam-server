@@ -1,178 +1,37 @@
 import jwt from "jsonwebtoken";
-import config from "../../config/config.cjs";
-import {
-  TokenError,
-  NotAllowedError,
-  UnauthorizedError,
-} from "../utils/errors/errors.js";
-import models from "../models/index.js";
 
-const { JWT_SECRET } = config.SERVER;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 /**
- * Bearer 토큰을 추출하고 검증하는 미들웨어
+ * JWT 인증 미들웨어
+ * - 요청 헤더의 Authorization: Bearer <token>에서 토큰을 추출
+ * - 토큰이 유효하면 req.user에 디코드된 정보를 할당
+ * - 토큰이 없거나 유효하지 않으면 401 에러 반환
  */
-export const authenticateAccessToken = (req, res, next) => {
+export const authenticateJWT = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  // Authorization 헤더가 없는 경우
-  // 401 반환
-  if (!authHeader)
-    next(new UnauthorizedError("Authorization 헤더가 제공되지 않았습니다."));
-  // Bearer Token인지 확인하기
-  if (authHeader.startsWith("Bearer ")) {
-    const token = authHeader.split(" ")[1];
-
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-      if (err) {
-        logger.debug("JWT 토큰 검증 실패", {
-          action: "token:authenticate",
-          message: err.message,
-        });
-
-        if (err.name === "TokenExpiredError") {
-          next(new TokenError("만료된 토큰입니다."));
-        } else if (err.name === "JsonWebTokenError") {
-          next(new TokenError("토큰이 올바르지 않습니다."));
-        } else if (err.name === "NotBeforeError") {
-          next(new TokenError("아직 유효하지 않은 토큰입니다."));
-        } else {
-          next(new TokenError("알 수 없는 JWT 에러가 발생했습니다."));
-        }
-        return;
-      }
-
-      // payload 안의 user_id를 암호화하여 전달했을 경우 복호화
-      // user_id = parseInt(decrypt62(user_id));
-      logger.debug("JWT 토큰 검증 성공", {
-        action: "token:authenticate",
-        actionType: "success",
-        userId: user.userId,
-      });
-
-      req.user = {
-        userId: user.userId,
-      }; // 검증된 사용자 정보를 요청 객체에 추가
-      next();
-    });
-  } else {
-    next(new UnauthorizedError("Authorization이 제공되지 않았습니다."));
-  }
-};
-
-/**
- * RefreshToken을 검증하는 미들웨어
- */
-export const authenticateRefreshToken = async (req, res, next) => {
-  const refreshToken = req.cookies.PEEKLE_RT;
-
-  if (!refreshToken) {
-    logger.error("[authenticateRefreshToken] 쿠키에 RefreshToken이 없습니다.");
-    return next(new UnauthorizedError("RefreshToken이 제공되지 않았습니다."));
+  // Authorization 헤더가 없거나 Bearer 토큰이 아닌 경우
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "인증 토큰이 필요합니다." });
   }
 
-  // JWT 토큰 검증
-  let decoded;
+  const token = authHeader.split(" ")[1];
+
   try {
-    decoded = jwt.verify(refreshToken, JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded; // 이후 미들웨어/컨트롤러에서 req.user로 접근 가능
+    next();
   } catch (err) {
-    logger.debug(`[authenticateRefreshToken] 토큰 검증 실패: ${err.message}`);
-
-    if (err.name === "TokenExpiredError") {
-      return next(new TokenError("만료된 토큰입니다."));
-    } else if (err.name === "JsonWebTokenError") {
-      return next(new TokenError("토큰이 올바르지 않습니다."));
-    } else if (err.name === "NotBeforeError") {
-      return next(new TokenError("아직 유효하지 않은 토큰입니다."));
-    } else {
-      return next(new TokenError("알 수 없는 JWT 에러가 발생했습니다."));
-    }
+    return res.status(401).json({ message: "유효하지 않은 토큰입니다." });
   }
-
-  // DB에서 Refresh Token 확인
-  const dbResult = await models.RefreshTokens.findOne({
-    attributes: ["userId"],
-    where: {
-      userId: decoded.userId, // JWT의 userId를 사용
-      token: refreshToken,
-    },
-  });
-
-  if (!dbResult) {
-    logger.error(
-      "[authenticateRefreshToken] RefreshToken이 DB와 일치하지 않습니다."
-    );
-    return next(new NotAllowedError("RefreshToken이 일치하지 않습니다."));
-  }
-
-  // 요청 객체에 사용자 정보 추가
-  req.user = { userId: decoded.userId };
-
-  // 성공적으로 통과
-  next();
 };
 
 /**
- * 로그인된 경우에만 사용자 권한을 검증하는 미들웨어
+ * 로그인 또는 회원가입 요청에서 토큰이 필요하지 않은 경우
+ * - 필요시 미들웨어를 사용하지 않고 라우터에 직접 컨트롤러 연결
+ * - 예: router.post('/login', loginController)
+ * - 예: router.post('/register', registerController)
  */
-export const autheticateAccessTokenIfExists = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  // console.log("Hello!");
 
-  if (!authHeader) {
-    logger.debug("Authorization 헤더가 제공되지 않았습니다.");
-    return next();
-  }
-
-  if (authHeader.startsWith("Bearer ")) {
-    const token = authHeader.split(" ")[1];
-
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-      if (err) {
-        logger.debug("JWT 토큰 검증 실패", {
-          action: "token:authenticate",
-          message: err.message,
-        });
-
-        // if (err.name === "TokenExpiredError") {
-        //   return next();
-        // } else if (err.name === "JsonWebTokenError") {
-        //   return next();
-        // } else if (err.name === "NotBeforeError") {
-        //   return next();
-        // } else {
-        //   return next();
-        // }
-
-        req.user = {
-          userId: null,
-        };
-        return next();
-      }
-
-      logger.debug("JWT 토큰 검증 성공", {
-        action: "token:authenticate",
-        actionType: "success",
-        userId: user.userId,
-      });
-
-      req.user = {
-        userId: user.userId,
-      }; // 검증된 사용자 정보를 요청 객체에 추가
-
-      // 확인용
-      console.log("Middleware -> req.user:", req.user);
-
-      next();
-    });
-  } else {
-    req.user = {
-      userId: null,
-    };
-
-    // 확인용
-    console.log("Middleware -> req.user:", req.user);
-
-    return next();
-  }
-};
+export default authenticateJWT;
