@@ -2,6 +2,7 @@ import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import SocialLoginRepository from '../../repositories/socialLogin/socialLogin.repository.js';
 import { SocialLoginDto } from '../../dtos/socialLogin/socialLogin.dto.js';
+import dayjs from 'dayjs';
 
 export default class SocialLoginService {
   constructor() {
@@ -39,11 +40,29 @@ export default class SocialLoginService {
     // ❗ 옵셔널 체이닝 + fallback 처리
     const email = kakaoAccount.email || null;
     const nickname = profile.nickname || '카카오유저';
-    
+    const name = kakaoAccount.name || null;
+    const gender = kakaoAccount.gender || null;
+
+    const birthyear = kakaoAccount.birthyear || '';
+    const birthday = kakaoAccount.birthday || ''; // MMDD
+    const birth = kakaoAccount.birthyear && kakaoAccount.birthday ? dayjs(`${kakaoAccount.birthyear}-${kakaoAccount.birthday}`, 'YYYY-MM-DD').toDate() : null;
+
     // 3. DB에서 사용자 확인 or 생성
     let user = await this.repo.findByKakaoId(kakaoId);
     if (!user) {
-      user = await this.repo.createUser(kakaoId, email, nickname);
+      user = await this.repo.createUser({
+          kakaoId,
+          email,
+          nickname,
+          name,
+          gender,
+          birth,
+          status: 'active',
+        }
+      );
+    } else {
+      // ✨ 기존 유저의 마지막 로그인 시간 업데이트
+      await this.repo.updateLastLogin(user.user_id);
     }
 
     // 4. social_logins 테이블에 저장
