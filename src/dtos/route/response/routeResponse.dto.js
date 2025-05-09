@@ -1,4 +1,16 @@
-//루트 상세 조회회 응답 DTO
+// 루트 생성 응답 DTO 
+export class RouteCreatedDto {
+    constructor({ routeId, routeName, description, places, totalDistance, totalDuration }) {
+      this.routeId = routeId;
+      this.routeName = routeName;
+      this.description = description;
+      this.places = places;
+      this.totalDistance = totalDistance;
+      this.totalDuration = totalDuration;
+    }
+  }
+
+//루트 상세 조회 응답 DTO
 export class RouteDetailDto {
     constructor({ routeId, user, name, description, avgRates, places, routeImgs, isLiked, isBookmarked }) {
       this.routeId = routeId;

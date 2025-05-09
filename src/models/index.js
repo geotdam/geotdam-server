@@ -39,6 +39,7 @@ const modelFiles = [
   'routeImgs.js',
   'routeLikes.js',
   'userImgs.js',
+  'placeRoutes.js'
 ];
 
 // 각 모델을 순차적으로 불러와서 db 객체에 추가

@@ -1,9 +1,14 @@
 //루트 생성 요청 DTO 
 export class CreateRouteDto {
-    constructor({ name, description, placeIds }) {
-      this.name = name;
+    constructor({ routeName, description, places }) {
+      this.routeName = routeName;
       this.description = description;
-      this.placeIds = placeIds; 
+      this.places = places?.map((place) => ({
+        sequence: place.sequence,
+        isPrimaryPlace: place.isPrimaryPlace,
+        lat: place.lat,
+        lng: place.lng
+      }));
     }
 }
 
