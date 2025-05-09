@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
-import db from './models/index.js'; 
 import authRoutes from './routes/auth/auth.routes.js';
 
 dotenv.config();
@@ -20,14 +19,7 @@ app.get("/", (req, res) => {
 });
 
 
-// 데이터베이스 동기화 후 서버 실행
-db.sequelize.sync({ force: false })  // 기존 테이블은 삭제하지 않고 동기화
-  .then(() => {
-    console.log("✅ Database synced successfully.");
-    app.listen(port, () => {
-      console.log(`✅ Example app listening on port ${port}`);
-    });
-  })
-  .catch((error) => {
-    console.error("❌ Error syncing database:", error);
-  });
+// 서버 실행
+app.listen(port, () => {
+  console.log(`✅ Example app listening on port ${port}`);
+});
