@@ -9,7 +9,7 @@ export default class SocialLoginService {
     this.repo = new SocialLoginRepository();
   }
 
-  async kakaoLogin(code) {
+  async kakaoLogin(code, state = 'normal') {
     // 1. 액세스 토큰 받기
     const tokenRes = await axios.post('https://kauth.kakao.com/oauth/token', null, {
       params: {
@@ -61,8 +61,19 @@ export default class SocialLoginService {
         }
       );
     } else {
-      // ✨ 기존 유저의 마지막 로그인 시간 업데이트
-      await this.repo.updateLastLogin(user.user_id);
+      // 이미 있던 유저
+    if (user.status === 'deactivated') {
+      // 비활성화된 유저가 로그인 시도
+      if (state === 'normal') {
+        // ── 재동의 필요: prompt=consent 를 붙인 URL 반환
+        return { reconsentUrl: this._buildReconsentUrl() };
+      }
+      // 재동의 후 재활성화
+      await this.repo.updateStatus(user.userId, 'active');
+      console.log(`🔄 user_id=${user.userId} 재활성화됨`);
+    }
+    // 마지막 로그인 시간만 갱신
+    await this.repo.updateLastLogin(user.userId);
     }
 
     // 4. social_logins 테이블에 저장
@@ -82,4 +93,21 @@ export default class SocialLoginService {
 
     return { token };
   }
+
+  _buildReconsentUrl() {
+     const base = 'https://kauth.kakao.com/oauth/authorize';
+     const params = new URLSearchParams({
+        client_id: process.env.KAKAO_REST_API_KEY,
+        redirect_uri: process.env.KAKAO_REDIRECT_URI,
+        response_type: 'code',
+        state: 'reconsent',
+        prompt: 'consent'
+     });
+      return `${base}?${params.toString()}`;
+   }
+
+  async deactivateInactiveUsers() {
+    return await this.repo.deactivateInactiveUsers();
+  }
+
 }
