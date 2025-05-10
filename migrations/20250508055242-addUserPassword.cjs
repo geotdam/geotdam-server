@@ -4,7 +4,8 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.addColumn("users", "password", {
       type: Sequelize.STRING,
-      unique: true,
+      allowNull: false,
+      // unique: true,  // 비밀번호는 중복 가능
     });
   },
 

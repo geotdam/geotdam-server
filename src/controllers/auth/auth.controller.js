@@ -1,5 +1,4 @@
 import SocialLoginService from "../../services/socialLogin/socialLogin.service.js";
-import JwtLoginService from "../../services/auth/login.service.js";
 const service = new SocialLoginService();
 
 export const kakaoLogin = async (req, res) => {
