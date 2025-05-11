@@ -1,8 +1,10 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
+import cron from 'node-cron';
 import db from './models/index.js'; 
 import authRoutes from './routes/auth/auth.routes.js';
+import SocialLoginService from './services/socialLogin/socialLogin.service.js';
 
 dotenv.config();
 
@@ -24,6 +26,14 @@ app.get("/", (req, res) => {
 db.sequelize.sync({ force: false })  // 기존 테이블은 삭제하지 않고 동기화
   .then(() => {
     console.log("✅ Database synced successfully.");
+
+    const socialLoginService = new SocialLoginService();
+    cron.schedule('0 3 * * *', async () => {
+      console.log('[CRON] ⏰ 1년 미접속 유저 비활성화 시작');
+      await socialLoginService.deactivateInactiveUsers();
+    });
+    console.log('✅ 비활성화 스케줄러가 등록되었습니다. (매일 03:00)');
+
     app.listen(port, () => {
       console.log(`✅ Example app listening on port ${port}`);
     });
