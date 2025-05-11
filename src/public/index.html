@@ -1,0 +1,36 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>위치 전송 테스트</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+  <h1>📍 위치 추적 중...</h1>
+  <div id="location">위치 정보를 가져오는 중...</div>
+
+  <script>
+    const socket = io();
+
+    function updateLocation(position) {
+      const { latitude, longitude } = position.coords;
+      document.getElementById("location").innerText = `위도: ${latitude}, 경도: ${longitude}`;
+      socket.emit("location", { latitude, longitude });
+    }
+
+    function handleError(error) {
+      document.getElementById("location").innerText = `❌ 위치 정보를 가져올 수 없습니다: ${error.message}`;
+    }
+
+    // 위치 정보 실시간 추적
+    if ("geolocation" in navigator) {
+      navigator.geolocation.watchPosition(updateLocation, handleError, {
+        enableHighAccuracy: true
+      });
+    } else {
+      document.getElementById("location").innerText = "이 브라우저는 위치 추적을 지원하지 않습니다.";
+    }
+  </script>
+</body>
+</html>
