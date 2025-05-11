@@ -10,9 +10,12 @@
   },
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "- main\t배포용 브랜치 (항상 안정적인 상태 유지, 허가없이 건들지 말기)\r - develop\t기능 개발 통합 브랜치 (pull request하고 동료들에게 merge요청, 확인이 오래걸리면 스스로 merge)\r - feature/{이슈번호}{간단한설명}\t새로운 기능 개발 브랜치\r - fix/{이슈번호}{간단한설명}\t버그 수정 브랜치\r - hotfix/{이슈번호}{간단한설명}\t긴급 수정 브랜치\r - refactor/{이슈번호}{간단한설명}\t리팩토링 브랜치\r - chore/{이슈번호}{간단한설명}\t기타 설정, 패키지 변경 등\r # Branch    설명\r 1. 기능개발이 완료된 브랜치는 develop브랜치에 merge합니다.\r 2. merge된 Branch는 삭제합니다.\r </br></br>\r ✅ 예시\r - feature/#12-login-api\r - fix/#17-cors-error\r - chore/#20-env-setting\r </br></br>\r ✅ Git 사용 규칙\r # 커밋 메시지 형식\r - #이슈번호 <타입>: <변경 요약> \r </br>\r - <타입> 종류</br>\r 태그 이름\t설명</br>\r [chore]\t코드 수정, 내부 파일 수정</br>\r [feat]\t새로운 기능 구현</br>\r [add]\tFEAT 이외의 부수적인 코드 추가, 라이브러리 추가, 새로운 파일 생성</br>\r [hotfix]\tissue나 QA에서 급한 버그 수정에 사용</br>\r [fix]\t버그, 오류 해결</br>\r [del]\t쓸모 없는 코드 삭제</br>\r [docs]\tREADME나 WIKI 등의 문서 개정</br>\r [correct]\t주로 문법의 오류나 타입의 변경, 이름 변경에 사용</br>\r [move]\t프로젝트 내 파일이나 코드의 이동</br>\r [rename]\t파일 이름 변경이 있을 때 사용</br>\r [improve]\t향상이 있을 때 사용</br>\r [refactor]\t전면 수정이 있을 때 사용</br>\r [test]\t테스트 코드 추가 시 사용 </br>",
   "dependencies": {
     "axios": "^1.9.0",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "dayjs": "^1.11.13",
     "dotenv": "^16.5.0",
@@ -25,6 +28,8 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "nodemon": "^3.1.9"
-  }
+    "nodemon": "^3.1.9",
+    "sequelize-auto": "^0.8.8"
+  },
+  "keywords": []
 }

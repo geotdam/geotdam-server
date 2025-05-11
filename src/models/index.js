@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
-import { fileURLToPath, pathToFileURL } from 'url';
+import { fileURLToPath, pathToFileURL } from "url";
 
 dotenv.config();
 
@@ -16,7 +16,7 @@ const db = {};
 
 // Sequelize 인스턴스 생성
 const sequelize = new Sequelize(
-  environmentConfig.database, 
+  environmentConfig.database,
   environmentConfig.username,
   environmentConfig.password,
   {
@@ -30,20 +30,21 @@ const sequelize = new Sequelize(
 
 // 모델 파일 순서 수동으로 지정
 const modelFiles = [
-  'users.js',
-  'socialLogins.js',
-  'places.js',
-  'routes.js',
-  'reviews.js',
-  'routeBookmarks.js',
-  'routeImgs.js',
-  'routeLikes.js',
-  'userImgs.js',
+  "users.js",
+  "socialLogins.js",
+  "places.js",
+  "routes.js",
+  "reviews.js",
+  "routeBookmarks.js",
+  "routeImgs.js",
+  "routeLikes.js",
+  "userImgs.js",
+  "jwtToken.js",
 ];
 
 // 각 모델을 순차적으로 불러와서 db 객체에 추가
 modelFiles.forEach((file) => {
-  const modelPath = pathToFileURL(path.join(__dirname, 'database', file)).href;
+  const modelPath = pathToFileURL(path.join(__dirname, "database", file)).href;
 
   import(modelPath).then((model) => {
     const modelInstance = model.default(sequelize, Sequelize.DataTypes);
