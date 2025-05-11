@@ -25,13 +25,14 @@ jobs:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
     # GCP 서버에 SSH로 접속해서 배포
+# GCP 서버에 SSH로 접속해서 배포
       - name: SSH to GCP instance and deploy
         run: |
           echo "🔧 Setting GCP project..."
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
           echo "🚀 Connecting to GCP instance and starting deployment..."
-          gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --zone ${{ secrets.GCP_ZONE }} --command "bash -s" << 'EOF'
+          gcloud compute ssh ${{ secrets.GCP_INSTANCE_NAME }} --zone ${{ secrets.GCP_ZONE }} --command "
             echo '📁 이동: /home/oculo0204/apps/geotdam-server' && \
             cd /home/oculo0204/apps/geotdam-server && \
 
@@ -49,23 +50,21 @@ jobs:
             if [ -f /home/oculo0204/apps/geotdam-server/config/config.cjs ]; then \
               npx sequelize-cli db:migrate --config /home/oculo0204/apps/geotdam-server/config/config.cjs || echo '⚠️ Migrate failed or not needed, proceeding...'; \
             else \
-              echo '⚠️ config.cjs 파일이 없습니다. 마이그레이션을 건너뜁니다.' && exit 1; \
+              echo '⚠️ config.cjs 파일이 없습니다. 마이그레이션을 건너뜁니다.'&& exit 1; \
             fi && \
             echo '🔓 로그 파일 권한 설정' && \
             sudo touch /home/oculo0204/apps/geotdam-server/app.log && \
             sudo chmod 777 /home/oculo0204/apps/geotdam-server/app.log && \
 
             echo '🚀 앱 시작 중...' && \
-            sudo nohup npm start > /home/oculo0204/apps/geotdam-server/app.log 2>&1 & disown || { echo '⚠️ 앱 시작 실패'; exit 1; }
+            sudo nohup npm start > /home/oculo0204/apps/geotdam-server/app.log 2>&1 & disown|| { echo '⚠️ 앱 시작 실패'; exit 1; }
 
             sleep 3 && \
             echo '📄 최근 로그:' && \
             tail -n 10 /home/oculo0204/apps/geotdam-server/app.log || echo '🚨 로그 확인 실패'
 
             echo '✅ 앱 실행 명령 전달 완료!'
-          EOF
-
-
+            "
 
 
 
