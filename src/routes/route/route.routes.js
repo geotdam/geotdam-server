@@ -1,10 +1,12 @@
 // src/routes/route/route.routes.js
 import express from 'express';
 import { createRoute } from '../../controllers/route/route.controller.js';
+import authenticateJWT from '../../middlewares/authenticate.jwt.js'; // 미들웨어 import
 
 const router = express.Router();
 
-router.post('/', createRoute);
+// JWT 인증 미들웨어 적용
+router.post('/', authenticateJWT, createRoute);
 
 export default router; 
 //나만의 루트 생성
