@@ -1,21 +1,22 @@
-// src/routes/auth.routes.js
-import express from 'express';
-//const verifyToken = require('../../middlewares/verifyToken');
-import { kakaoLoginRedirect, kakaoCallback } from '../../controllers/auth/auth.controller.js';
+// src/routes/authRoutes.js
+import express from "express";
+import {
+  kakaoLogin,
+  kakaoCallback,
+} from "../../controllers/auth/auth.controller.js";
+import * as userController from "../../controllers/auth/auth.signup.controller.js";
 
 const router = express.Router();
 
-// 1) 브라우저에서 로그인 버튼 클릭 → 카카오 동의 화면으로 리다이렉트
-router.get('/kakao', kakaoLoginRedirect);
+router.post("/kakao", kakaoLogin);
+//router.get('/api/auth/callback/kakao', kakaoLogin);
+// GET 방식: 브라우저에서 리디렉션되는 실제 경로
+router.get("/callback/kakao", kakaoCallback); // 추가
 
-// 2) 카카오 동의 완료 후 돌아오는 콜백
-router.get('/callback/kakao', kakaoCallback);
-
-
-// // 예: 로그인된 사용자만 접근 가능 -> 인증이 필요한 화면은 이렇게 쓰면 될 듯 합니다
-// router.get('/me', VerifyToken, (req, res) => {
-//   res.json({ message: '인증 완료된 사용자입니다.', user: req.user });
-// });
-
+// 회원가입이랑 로그인은 인증 필요 없음
+// 회원가입
+router.post("/signup", userController.register);
+// 로그인
+router.post("/login", userController.login);
 
 export default router;

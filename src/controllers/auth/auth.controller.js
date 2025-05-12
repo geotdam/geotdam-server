@@ -9,8 +9,8 @@ export const kakaoLogin = async (req, res) => {
     const result = await service.kakaoLogin(code);
     res.status(200).json(result);
   } catch (error) {
-    console.error('❌ 카카오 로그인 오류:', error); // 실제 에러 확인
-    res.status(500).json({ message: '카카오 로그인 실패' });
+    console.error("❌ 카카오 로그인 오류:", error); // 실제 에러 확인
+    res.status(500).json({ message: "카카오 로그인 실패" });
   }
 };
 
