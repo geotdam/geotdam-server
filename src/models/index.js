@@ -33,6 +33,8 @@ const modelFiles = [
   "users.js",
   "socialLogins.js",
   "places.js",
+  "placeImgs.js",       // ✅ 추가
+  "placeRoutes.js",     // ✅ 추가
   "routes.js",
   "reviews.js",
   "routeBookmarks.js",
