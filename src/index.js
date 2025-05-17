@@ -5,7 +5,7 @@ import cron from 'node-cron';
 import db from './models/index.js'; 
 import authRoutes from './routes/auth/auth.routes.js';
 import SocialLoginService from './services/socialLogin/socialLogin.service.js';
-import routeRoutes from './routes/route/route.routes.js';
+import placeRouter from './routes/maps/place.routes.js';
 
 dotenv.config();
 
@@ -17,7 +17,7 @@ app.use(express.static("public")); // 정적 파일 접근
 app.use(express.json()); // request의 본문을 json으로 해석할 수 있도록 함 (JSON 형태의 요청 body를 파싱하기 위함)
 app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형태로 본문 데이터 해석
 app.use("/api/auth", authRoutes); // auth 라우터 등록
-app.use('/api/routes', routeRoutes);
+app.use('/api', placeRouter); // 장소검색 라우터 등록 
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

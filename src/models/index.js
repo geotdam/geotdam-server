@@ -30,15 +30,17 @@ const sequelize = new Sequelize(
 
 // 모델 파일 순서 수동으로 지정
 const modelFiles = [
-  'users.js',
-  'socialLogins.js',
-  'places.js',
-  'routes.js',
-  'reviews.js',
-  'routeBookmarks.js',
-  'routeImgs.js',
-  'routeLikes.js',
-  'userImgs.js',
+  "users.js",
+  "socialLogins.js",
+  "places.js",
+  "placeImgs.js",       // ✅ 추가
+  "placeRoutes.js",     // ✅ 추가
+  "routes.js",
+  "reviews.js",
+  "routeBookmarks.js",
+  "routeImgs.js",
+  "routeLikes.js",
+  "userImgs.js",
   "jwtToken.js",
   'placeRoutes.js'
 ];
