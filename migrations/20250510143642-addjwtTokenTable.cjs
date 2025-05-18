@@ -32,6 +32,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
+    await queryInterface.removeConstraint("jwtToken", "jwttoken_ibfk_1");
     await queryInterface.removeIndex("jwtToken", "jwt_token_users_user_id_fk");
     await queryInterface.dropTable("jwtToken");
   },

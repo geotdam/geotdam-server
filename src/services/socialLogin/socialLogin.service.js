@@ -57,6 +57,7 @@ export default class SocialLoginService {
           name,
           gender,
           birth,
+          password: '',
           status: 'active',
         }
       );
