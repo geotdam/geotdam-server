@@ -36,8 +36,8 @@ export const kakaoCallback = async (req, res) => {
     }
 
     // 정상 로그인 완료: 프론트로 토큰 전달
-    // SPA 예시: 프론트 로그인 성공 페이지로 리다이렉트
-    return res.redirect(`http://localhost:3000/login-success?token=${result.token}`);
+    const redirectBaseUrl = process.env.KAKAO_SUCCESS_REDIRECT_URI;
+    return res.redirect(`${redirectBaseUrl}?token=${result.token}`);
   } catch (error) {
     console.error('❌ GET 카카오 콜백 오류:', error.response?.data || error.message);
     return res.status(500).json({ message: '카카오 로그인 실패' });
