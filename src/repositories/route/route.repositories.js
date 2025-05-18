@@ -2,15 +2,7 @@ import db from '../../models/index.js';
 const { places, routes, placeRoutes } = db;
 import { Sequelize } from 'sequelize';
 
-export const createRoute = async ({ userId, name, description }) => {
-  return await routes.create({
-    userId,
-    name,
-    description,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  });
-};
+
 
 export const savePlaceRoutes = async (routeId, placeInputs) => {
   for (const place of placeInputs) {

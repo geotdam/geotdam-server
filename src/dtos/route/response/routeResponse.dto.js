@@ -1,51 +1,37 @@
-// 루트 생성 응답 DTO 
-export class RouteCreatedDto {
-    constructor({ routeId, routeName, description, places, totalDistance, totalDuration }) {
-      this.routeId = routeId;
-      this.routeName = routeName;
-      this.description = description;
-      this.places = places;
-      this.totalDistance = totalDistance;
-      this.totalDuration = totalDuration;
-    }
+// src/dtos/route/response/routeResponse.dto.js
+
+//도보경로 검색 리스폰스 dto 
+export class RouteResponseDto {
+  constructor(data, nameSummary) {
+    const features = data.features || [];
+
+    const summary = features.find(f =>
+      f.properties?.totalDistance !== undefined &&
+      f.properties?.totalTime !== undefined
+    )?.properties || { totalDistance: 0, totalTime: 0 };
+
+    const polyline = features
+      .filter((f) => f.geometry?.type === 'LineString')
+      .flatMap((f) =>
+        f.geometry.coordinates.map(([lng, lat]) => ({ lat, lng }))
+      );
+
+    const start = polyline[0] ?? {};
+    const end = polyline.at(-1) ?? {};
+
+    this.route = {
+      summary: nameSummary,
+      distance: summary.totalDistance,
+      duration: summary.totalTime,
+      start_location: start,
+      end_location: end,
+      polyline,
+    };
+
+    this.markings = [];
   }
-
-//루트 상세 조회 응답 DTO
-export class RouteDetailDto {
-    constructor({ routeId, user, name, description, avgRates, places, routeImgs, isLiked, isBookmarked }) {
-      this.routeId = routeId;
-      this.user = user; // { userId, name, profileImgUrl }
-      this.name = name;
-      this.description = description;
-      this.avgRates = avgRates;
-      this.places = places; // [{ placeId, name, location, placeImgUrl }]
-      this.routeImgs = routeImgs; // [{ routeImgId, url }]
-      this.isLiked = isLiked;
-      this.isBookmarked = isBookmarked;
-    }
-  }
-
-
-// 루트 전체 조회 응답 DTO 
-export class RouteSummaryDto {
-    constructor({ routeId, name, avgRates, thumbnailUrl }) {
-      this.routeId = routeId;
-      this.name = name;
-      this.avgRates = avgRates;
-      this.thumbnailUrl = thumbnailUrl;
-    }
 }
 
-//루트 리뷰 조회 응답 DTO 
-export class ReviewDto {
-    constructor({ reviewId, user, comment, rates, createdAt }) {
-      this.reviewId = reviewId;
-      this.user = user; // { userId, name, profileImgUrl }
-      this.comment = comment;
-      this.rates = rates;
-      this.createdAt = createdAt;
-    }
-}
 
 //내가 만든 경로의 마킹 불러오기 DTO 
 export class RouteMarkingDto {
@@ -58,14 +44,4 @@ export class RouteMarkingDto {
   }
 
 
-//추천 루트 보여주기 응답 DTO 
-export class RecommendedRouteDto {
-    constructor({ routeId, name, avgRates, reason }) {
-      this.routeId = routeId;
-      this.name = name;
-      this.avgRates = avgRates;
-      this.reason = reason; 
-    }
-  }
-  
 
