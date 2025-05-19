@@ -7,13 +7,14 @@ export default class SocialLoginRepository {
     return await db.Users.findOne({ where: { kakao_id: kakaoId } });
   }
 
-  async createUser({ kakaoId, email, nickname, name, gender, birth, status }) {
+  async createUser({ kakaoId, email, nickname, name, gender, birth, status, password }) {
     return await db.Users.create({
       kakaoId: kakaoId,
       email: email,
       nickname: nickname,
       name,
       gender,
+      password: '',
       birth,
       status,
       created_at: new Date(),
