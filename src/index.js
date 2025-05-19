@@ -10,6 +10,9 @@ import locationSocket from './sockets/locationSocket.js';
 import SocialLoginService from './services/socialLogin/socialLogin.service.js';
 import path from "path";
 import { fileURLToPath } from "url";
+import placeRouter from './routes/maps/place.routes.js';
+import routeRouter from './routes/route/route.routes.js'; 
+
 
 dotenv.config();
 
@@ -24,6 +27,9 @@ app.use(cors());
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use("/api/auth", authRoutes); // auth 라우터 등록
+app.use('/api', placeRouter); // 장소검색 라우터 등록
+ app.use('/api', routeRouter);//경로검색 라우터 등록 
 
 app.use("/api/auth", authRoutes);
 

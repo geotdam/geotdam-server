@@ -33,6 +33,8 @@ const modelFiles = [
   "users.js",
   "socialLogins.js",
   "places.js",
+  "placeImgs.js",       // ✅ 추가
+  "placeRoutes.js",     // ✅ 추가
   "routes.js",
   "reviews.js",
   "routeBookmarks.js",
@@ -40,6 +42,7 @@ const modelFiles = [
   "routeLikes.js",
   "userImgs.js",
   "jwtToken.js",
+  'placeRoutes.js'
 ];
 
 // 각 모델을 순차적으로 불러와서 db 객체에 추가
