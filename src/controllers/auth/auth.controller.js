@@ -1,4 +1,4 @@
-//auth.controller.js
+//src.controllers/auth/auth.controller.js
 import SocialLoginService from '../../services/socialLogin/socialLogin.service.js';
 
 const service = new SocialLoginService();
@@ -41,5 +41,29 @@ export const kakaoCallback = async (req, res) => {
   } catch (error) {
     console.error('❌ GET 카카오 콜백 오류:', error.response?.data || error.message);
     return res.status(500).json({ message: '카카오 로그인 실패' });
+  }
+};
+
+export const googleLoginRedirect = (req, res) => {
+  const authorizeUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+  authorizeUrl.searchParams.set('client_id', process.env.GOOGLE_CLIENT_ID);
+  authorizeUrl.searchParams.set('redirect_uri', process.env.GOOGLE_REDIRECT_URI);
+  authorizeUrl.searchParams.set('response_type', 'code');
+  authorizeUrl.searchParams.set('scope', 'openid email profile https://www.googleapis.com/auth/user.birthday.read https://www.googleapis.com/auth/user.gender.read');
+  authorizeUrl.searchParams.set('access_type', 'offline');
+  authorizeUrl.searchParams.set('prompt', 'consent');
+
+  return res.redirect(authorizeUrl.toString());
+};
+
+export const googleCallback = async (req, res) => {
+  try {
+    const { code } = req.query;
+    const result = await service.googleLogin(code);
+    const redirectBaseUrl = process.env.GOOGLE_SUCCESS_REDIRECT_URI;
+    return res.redirect(`${redirectBaseUrl}?token=${result.token}`);
+  } catch (error) {
+    console.error('❌ 구글 로그인 오류:', error.response?.data || error.message);
+    return res.status(500).json({ message: '구글 로그인 실패' });
   }
 };
