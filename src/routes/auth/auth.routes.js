@@ -1,17 +1,20 @@
-// src/routes/authRoutes.js
+// src/routes/auth/authRoutes.js
 import express from "express";
 import {
-  kakaoLogin,
+  kakaoLoginRedirect,
   kakaoCallback,
+  googleLoginRedirect,
+  googleCallback
 } from "../../controllers/auth/auth.controller.js";
 import * as userController from "../../controllers/auth/auth.signup.controller.js";
 
 const router = express.Router();
 
-router.post("/kakao", kakaoLogin);
-//router.get('/api/auth/callback/kakao', kakaoLogin);
-// GET 방식: 브라우저에서 리디렉션되는 실제 경로
-router.get("/callback/kakao", kakaoCallback); // 추가
+//router.post("/kakao", kakaoLogin);
+router.get("/login/kakao", kakaoLoginRedirect);
+router.get("/callback/kakao", kakaoCallback);
+router.get("/login/google", googleLoginRedirect);
+router.get("/callback/google", googleCallback);
 
 // 회원가입이랑 로그인은 인증 필요 없음
 // 회원가입
