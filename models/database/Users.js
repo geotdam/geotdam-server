@@ -19,6 +19,10 @@ export default class Users extends Model {
       type: DataTypes.STRING(255),
       allowNull: true
     },
+    password: {
+      type: DataTypes.STRING(255),
+      allowNull: true, // 소셜 로그인 사용자를 위해 null 허용
+    },
     birth: {
       type: DataTypes.DATE,
       allowNull: true
@@ -67,7 +71,7 @@ export default class Users extends Model {
     email: {
       type: DataTypes.STRING(255),
       allowNull: true
-    }
+    },
   }, {
     sequelize,
     tableName: 'users',
