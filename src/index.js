@@ -12,6 +12,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import placeRouter from './routes/maps/place.routes.js';
 import routeRouter from './routes/route/route.routes.js'; 
+import { errorHandler } from './middlewares/errorHandler.js';
+import locationRouter from './sockets/socket.routes.js';
 
 
 dotenv.config();
@@ -30,13 +32,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api/auth", authRoutes); // auth 라우터 등록
 app.use('/api', placeRouter); // 장소검색 라우터 등록
  app.use('/api', routeRouter);//경로검색 라우터 등록 
-
+app.use("/api", locationRouter);
 app.use("/api/auth", authRoutes);
 
 // 실시간 위치테스트용 기본 라우트
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
+
+//에러 핸들러
+app.use(errorHandler);
 
 // HTTP + Socket 서버 초기화
 const server = createServer(app);
