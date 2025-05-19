@@ -1,7 +1,7 @@
 /**
  * 상속받아 사용하는 에러 클래스
  */
-class CustomError extends Error {
+export class CustomError extends Error {
   constructor(reason, errorCode, statusCode, data = null) {
     super(reason); // error.message = reason
     this.reason = reason; // error.reason = reason
@@ -12,11 +12,10 @@ class CustomError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 }
-
 /**
  * 에러 추가 예시 500
  */
-class SampleError extends CustomError {
+export class SampleError extends CustomError {
   constructor(reason, data = null) {
     super(reason, "SAMPLE_ERROR", 500, data);
   }
@@ -25,7 +24,7 @@ class SampleError extends CustomError {
 /**
  * 사용자가 입력값 잘 못 넣은 경우 400
  */
-class InvalidInputError extends CustomError {
+export class InvalidInputError extends CustomError {
   constructor(reason, data = null) {
     super(reason, "INVALID_INPUT", 400, data);
   }
@@ -34,7 +33,7 @@ class InvalidInputError extends CustomError {
 /**
  * 요청한게 이미 존재하는 경우 409
  */
-class AlreadyExistsError extends CustomError {
+export class AlreadyExistsError extends CustomError {
   constructor(reason, data = null) {
     super(reason, "ALREADY_EXISTS", 409, data);
   }
@@ -43,7 +42,7 @@ class AlreadyExistsError extends CustomError {
 /**
  * 요청한게 존재하지 않는 경우 404
  */
-class NotExistsError extends CustomError {
+export class NotExistsError extends CustomError {
   constructor(reason, data = null) {
     super(reason, "NOT_EXISTS", 404, data);
   }
@@ -52,7 +51,7 @@ class NotExistsError extends CustomError {
 /**
  * 인증은 되었으나 권한이 부족한 경우 403
  */
-class NotAllowedError extends CustomError {
+export class NotAllowedError extends CustomError {
   constructor(reason, data = null) {
     super(reason, "NOT_ALLOWED", 403, data);
   }
@@ -61,7 +60,7 @@ class NotAllowedError extends CustomError {
 /**
  * 인증 정보가 제공되어 있지 않은 경우 401
  */
-class UnauthorizedError extends CustomError {
+export class UnauthorizedError extends CustomError {
   constructor(reason, data = null) {
     super(reason, "UNAUTHORIZED", 401, data);
   }
@@ -75,14 +74,3 @@ class UnauthorizedError extends CustomError {
 //     super(reason, "UNKNOWN_ERROR", 500, data);
 //   }
 // }
-
-module.exports = {
-  CustomError,
-  SampleError,
-  InvalidInputError,
-  AlreadyExistsError,
-  NotExistsError,
-  NotAllowedError,
-  UnauthorizedError,
-  // UnknownError,
-};

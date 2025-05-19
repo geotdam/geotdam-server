@@ -31,7 +31,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/api/auth", authRoutes); // auth 라우터 등록
 app.use('/api', placeRouter); // 장소검색 라우터 등록
- app.use('/api', routeRouter);//경로검색 라우터 등록 
+app.use('/api', routeRouter);//경로검색 라우터 등록 
 app.use("/api", locationRouter);
 app.use("/api/auth", authRoutes);
 
