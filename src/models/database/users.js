@@ -35,11 +35,6 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         field: "is_location_shared",
       },
-      kakaoId: {
-        type: DataTypes.STRING,
-        field: "kakao_id",
-        unique: true,
-      },
       email: {
         type: DataTypes.STRING,
         unique: true,

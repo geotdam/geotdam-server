@@ -24,7 +24,7 @@ export default class Users extends Model {
       allowNull: true, // 소셜 로그인 사용자를 위해 null 허용
     },
     birth: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: true
     },
     gender: {
@@ -67,6 +67,11 @@ export default class Users extends Model {
       allowNull: true,
       unique: "kakao_id",
       field: 'kakao_id'
+    },
+    google_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
     },
     email: {
       type: DataTypes.STRING(255),

@@ -1,3 +1,4 @@
+// src/services/socialLogin/socialLogin.service.js
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import SocialLoginRepository from '../../repositories/socialLogin/socialLogin.repository.js';
@@ -10,8 +11,104 @@ export default class SocialLoginService {
   }
 
   async kakaoLogin(code, state = 'normal') {
-    // 1. 액세스 토큰 받기
-    const tokenRes = await axios.post('https://kauth.kakao.com/oauth/token', null, {
+    const accessToken = await this._getKakaoAccessToken(code);
+    const userInfo = await this._getKakaoUserInfo(accessToken);
+
+    const {
+      email, nickname, name, gender, birth
+    } = userInfo;
+
+    let user = await this.repo.findByEmail(email);
+
+    if (!user && email) {
+      user = await this.repo.createUser({
+        email,
+        nickname,
+        name,
+        gender,
+        birth,
+        password: '',
+        status: 'active',
+      });
+    } else {
+      if (user.status === 'deactivated') {
+        if (state === 'normal') return { reconsentUrl: this._buildReconsentUrl() };
+        await this.repo.updateStatus(user.userId, 'active');
+      }
+
+      await this.repo.updateLastLogin(user.userId);
+    }
+
+    await this.repo.saveSocialLogin(new SocialLoginDto({
+      userId: user.userId,
+      accessToken,
+      email,
+      platform: 'kakao',
+    }));
+
+    const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+    return { token };
+  }
+
+  async googleLogin(code) {
+    const { access_token } = await this._getGoogleAccessToken(code);
+    const userInfo = await this._getGoogleUserInfo(access_token);
+
+    const {
+      email, name, nickname, birth, gender
+    } = userInfo;
+
+    let user = await this.repo.findByEmail(email);
+
+    if (!user && email) {
+      user = await this.repo.createUser({
+        email,
+        nickname,
+        name,
+        gender,
+        birth,
+        password: '',
+        status: 'active',
+      });
+    } else {
+      if (user.status === 'deactivated') {
+        await this.repo.updateStatus(user.userId, 'active');
+      }
+
+      await this.repo.updateLastLogin(user.userId);
+    }
+
+    await this.repo.saveSocialLogin(new SocialLoginDto({
+      userId: user.userId,
+      accessToken: access_token,
+      email,
+      platform: 'google',
+    }));
+
+    const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+    return { token };
+  }
+
+  async deactivateInactiveUsers() {
+    return await this.repo.deactivateInactiveUsers();
+  }
+
+  _buildReconsentUrl() {
+    const base = 'https://kauth.kakao.com/oauth/authorize';
+    const params = new URLSearchParams({
+      client_id: process.env.KAKAO_REST_API_KEY,
+      redirect_uri: process.env.KAKAO_REDIRECT_URI,
+      response_type: 'code',
+      state: 'reconsent',
+      prompt: 'consent'
+    });
+    return `${base}?${params.toString()}`;
+  }
+
+  async _getKakaoAccessToken(code) {
+    const res = await axios.post('https://kauth.kakao.com/oauth/token', null, {
       params: {
         grant_type: 'authorization_code',
         client_id: process.env.KAKAO_REST_API_KEY,
@@ -22,93 +119,69 @@ export default class SocialLoginService {
         'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
       },
     });
+    return res.data.access_token;
+  }
 
-    const accessToken = tokenRes.data.access_token;
+  async _getKakaoUserInfo(accessToken) {
+    const res = await axios.get('https://kapi.kakao.com/v2/user/me', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
 
-    // 2. 사용자 정보 받기
-    const userRes = await axios.get('https://kapi.kakao.com/v2/user/me', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
+    const data = res.data;
+    const account = data.kakao_account || {};
+    const profile = account.profile || {};
+
+    const birth = account.birthyear && account.birthday
+      ? dayjs(`${account.birthyear}-${account.birthday}`, 'YYYY-MM-DD').toDate()
+      : null;
+
+    return {
+      kakaoId: data.id,
+      email: account.email || null,
+      nickname: profile.nickname || '카카오유저',
+      name: account.name || null,
+      gender: account.gender || null,
+      birth,
+    };
+  }
+
+  async _getGoogleAccessToken(code) {
+    const res = await axios.post('https://oauth2.googleapis.com/token', null, {
+      params: {
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+        grant_type: 'authorization_code',
       },
     });
-
-    const kakaoUser = userRes.data;
-    const kakaoId = kakaoUser.id;
-    const kakaoAccount = kakaoUser.kakao_account || {};
-    const profile = kakaoAccount.profile || {};
-
-    // ❗ 옵셔널 체이닝 + fallback 처리
-    const email = kakaoAccount.email || null;
-    const nickname = profile.nickname || '카카오유저';
-    const name = kakaoAccount.name || null;
-    const gender = kakaoAccount.gender || null;
-
-    const birthyear = kakaoAccount.birthyear || '';
-    const birthday = kakaoAccount.birthday || ''; // MMDD
-    const birth = kakaoAccount.birthyear && kakaoAccount.birthday ? dayjs(`${kakaoAccount.birthyear}-${kakaoAccount.birthday}`, 'YYYY-MM-DD').toDate() : null;
-
-    // 3. DB에서 사용자 확인 or 생성
-    let user = await this.repo.findByKakaoId(kakaoId);
-    if (!user) {
-      user = await this.repo.createUser({
-          kakaoId,
-          email,
-          nickname,
-          name,
-          gender,
-          birth,
-          password: '',
-          status: 'active',
-        }
-      );
-    } else {
-      // 이미 있던 유저
-    if (user.status === 'deactivated') {
-      // 비활성화된 유저가 로그인 시도
-      if (state === 'normal') {
-        // ── 재동의 필요: prompt=consent 를 붙인 URL 반환
-        return { reconsentUrl: this._buildReconsentUrl() };
-      }
-      // 재동의 후 재활성화
-      await this.repo.updateStatus(user.userId, 'active');
-      console.log(`🔄 user_id=${user.userId} 재활성화됨`);
-    }
-    // 마지막 로그인 시간만 갱신
-    await this.repo.updateLastLogin(user.userId);
-    }
-
-    // 4. social_logins 테이블에 저장
-    const dto = new SocialLoginDto({
-      userId: user.userId,
-      accessToken,
-      email,
-      platform: 'kakao',
-    });
-
-    await this.repo.saveSocialLogin(dto);
-
-    // 5. JWT 발급
-    const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET, {
-      expiresIn: '24h',
-    });
-
-    return { token };
+    return res.data;
   }
 
-  _buildReconsentUrl() {
-     const base = 'https://kauth.kakao.com/oauth/authorize';
-     const params = new URLSearchParams({
-        client_id: process.env.KAKAO_REST_API_KEY,
-        redirect_uri: process.env.KAKAO_REDIRECT_URI,
-        response_type: 'code',
-        state: 'reconsent',
-        prompt: 'consent'
-     });
-      return `${base}?${params.toString()}`;
-   }
+  async _getGoogleUserInfo(accessToken) {
+    const userRes = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
 
-  async deactivateInactiveUsers() {
-    return await this.repo.deactivateInactiveUsers();
+    const peopleRes = await axios.get('https://people.googleapis.com/v1/people/me', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      params: { personFields: 'genders,birthdays' },
+    });
+
+    const birthday = peopleRes.data.birthdays?.[0]?.date;
+    const birth = birthday
+      ? new Date(`${birthday.year || 2000}-${String(birthday.month).padStart(2, '0')}-${String(birthday.day).padStart(2, '0')}`)
+      : null;
+
+    const gender = peopleRes.data.genders?.[0]?.value?.toLowerCase() || null;
+
+    return {
+      googleId: userRes.data.sub,
+      email: userRes.data.email,
+      name: userRes.data.name,
+      nickname: userRes.data.name,
+      birth,
+      gender,
+    };
   }
-
 }

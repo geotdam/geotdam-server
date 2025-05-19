@@ -15,9 +15,14 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       field: 'access_token'
     },
-    email: DataTypes.STRING,
-    platform: DataTypes.STRING,
-    allowNull: true
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    platform: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
   }, {
     tableName: 'socialLogins',
     timestamps: false

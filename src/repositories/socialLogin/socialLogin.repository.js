@@ -1,26 +1,34 @@
+// src/repositories/socialLogin/socialLogin.repository.js
 import db from '../../models/index.js';
 import { Op } from 'sequelize';
 import dayjs from 'dayjs';
 
 export default class SocialLoginRepository {
-  async findByKakaoId(kakaoId) {
-    return await db.Users.findOne({ where: { kakao_id: kakaoId } });
+  async findByEmail(email) {
+    return await db.Users.findOne({ where: { email } });
   }
 
-  async createUser({ kakaoId, email, nickname, name, gender, birth, status, password }) {
-    return await db.Users.create({
-      kakaoId: kakaoId,
-      email: email,
-      nickname: nickname,
-      name,
-      gender,
-      password: '',
-      birth,
-      status,
-      created_at: new Date(),
-      updated_at: new Date(),
-    });
-  }
+  // async updateGoogleId(userId, googleId) {
+  //   return await db.Users.update({ google_id: googleId }, { where: { userId } });
+  // }
+
+  // async updateKakaoId(userId, kakaoId) {
+  //   return await db.Users.update({ kakao_id: kakaoId }, { where: { userId } });
+  // }
+  
+  async createUser({ email, nickname, name, gender, birth, status, password }) {
+  return await db.Users.create({
+    email,
+    nickname,
+    name,
+    gender,
+    birth: birth ? new Date(birth) : null,
+    password,
+    status,
+    created_at: new Date(),
+    updated_at: new Date(),
+  });
+}
 
   async updateLastLogin(userId) {
     try {
@@ -32,6 +40,13 @@ export default class SocialLoginRepository {
       console.error('🛑 로그인 시간 업데이트 실패:', error);
       throw error;
     }
+  }
+
+  async updateStatus(userId, newStatus) {
+     return await db.Users.update(
+        { status: newStatus, updated_at: new Date() },
+        { where: { user_id: userId } }
+    );
   }
 
   async saveSocialLogin(dto) {
@@ -65,10 +80,4 @@ export default class SocialLoginRepository {
     }
   }
   
-  async updateStatus(userId, newStatus) {
-     return await db.Users.update(
-        { status: newStatus, updated_at: new Date() },
-        { where: { user_id: userId } }
-    );
-  }
 }
