@@ -7,7 +7,7 @@ import {
 let latestLocations = {};
 
 export const updateLocation = (req,res, next) => {
-    const userId = req.user.id; 
+    const userId = req.user.userId; 
     try{
     const {latitude, longitude} = req.body;
     if (!userId || !latitude || !longitude) {  //유효성 검사
