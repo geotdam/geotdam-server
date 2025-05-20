@@ -8,8 +8,10 @@ let latestLocations = {};
 
 export const updateLocation = (req,res, next) => {
     const userId = req.user.userId; 
+  console.log("req.user:", req.user); 
     try{
-    const {latitude, longitude} = req.body;
+    const {latitude, longitude} = req.body; 
+  console.log("latitude, longitude:", latitude, longitude);
     if (!userId || !latitude || !longitude) {  //유효성 검사
         throw new InvalidInputError("모든 필드를 입력하세요.");
     }
