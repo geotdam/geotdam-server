@@ -1,20 +1,22 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
-import cron from 'node-cron';
-import db from './models/index.js'; 
-import authRoutes from './routes/auth/auth.routes.js';
+
+import cron from "node-cron";
+import db from "./models/index.js";
+import authRoutes from "./routes/auth/auth.routes.js";
+import SocialLoginService from "./services/socialLogin/socialLogin.service.js";
+import placeRouter from "./routes/maps/place.routes.js";
+import roadRoutes from "./routes/road/road.routes.js";
+
 import { createServer } from "http";
 import { Server } from "socket.io";
-import locationSocket from './sockets/locationSocket.js';
-import SocialLoginService from './services/socialLogin/socialLogin.service.js';
+import locationSocket from "./sockets/locationSocket.js";
 import path from "path";
 import { fileURLToPath } from "url";
-import placeRouter from './routes/maps/place.routes.js';
-import routeRouter from './routes/route/route.routes.js'; 
-import { errorHandler } from './middlewares/errorHandler.js';
-import locationRouter from './sockets/socket.routes.js';
-
+import routeRouter from "./routes/route/route.routes.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
+import locationRouter from "./sockets/socket.routes.js";
 
 dotenv.config();
 
@@ -30,10 +32,12 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/api/auth", authRoutes); // auth 라우터 등록
-app.use('/api', placeRouter); // 장소검색 라우터 등록
-app.use('/api', routeRouter);//경로검색 라우터 등록 
+
+app.use("/api/road", roadRoutes); // road 관련 라우터 등록
+
+app.use("/api", placeRouter); // 장소검색 라우터 등록
+app.use("/api", routeRouter); //경로검색 라우터 등록
 app.use("/api", locationRouter);
-app.use("/api/auth", authRoutes);
 
 // 실시간 위치테스트용 기본 라우트
 app.get("/", (req, res) => {
@@ -48,8 +52,8 @@ const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "*",
-    methods: ["GET", "POST"]
-  }
+    methods: ["GET", "POST"],
+  },
 });
 
 // 소켓 설정 등록
@@ -62,11 +66,11 @@ db.sequelize
     console.log("✅ Database synced successfully.");
 
     const socialLoginService = new SocialLoginService();
-    cron.schedule('0 3 * * *', async () => {
-      console.log('[CRON] ⏰ 1년 미접속 유저 비활성화 시작');
+    cron.schedule("0 3 * * *", async () => {
+      console.log("[CRON] ⏰ 1년 미접속 유저 비활성화 시작");
       await socialLoginService.deactivateInactiveUsers();
     });
-    console.log('✅ 비활성화 스케줄러가 등록되었습니다. (매일 03:00)');
+    console.log("✅ 비활성화 스케줄러가 등록되었습니다. (매일 03:00)");
 
     server.listen(port, () => {
       console.log(`✅ Server with Socket.io listening on port ${port}`);
