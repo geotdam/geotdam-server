@@ -1,3 +1,4 @@
+// src/dtos/socialLogin/socialLogin.dto.js
 export class SocialLoginDto {
     constructor({ userId, accessToken, email, platform }) {
       this.userId = userId;
