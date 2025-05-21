@@ -12,6 +12,6 @@ router.post("/", authenticateJWT, roadController.newRoad);
 router.post("/:routeId/reviews", authenticateJWT, roadController.newReview);
 
 // 루트 리뷰 조회 (페이징)
-router.get("/:routeId/reviews", roadController.listReview);
+router.get("/:routeId/reviews", authenticateJWT, roadController.listReview);
 
 export default router;

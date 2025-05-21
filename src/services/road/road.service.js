@@ -23,7 +23,10 @@ export const newRoad = async ({
 
 // 루트 리뷰 생성
 export const newReview = async ({ userId, routeId, comment, rates }) => {
-  const review = await reviewRepository.create({
+  if (!userId || !routeId) throw new Error("필수 필드 누락");
+  if (rates < 0 || rates > 5) throw new Error("평점 범위 오류(0~5)");
+
+  const review = await reviewRepository.createReview({
     userId,
     routeId,
     comment,
@@ -33,16 +36,20 @@ export const newReview = async ({ userId, routeId, comment, rates }) => {
 };
 
 // 루트 리뷰 조회
-// export const getRoadReviews = async ({
-//   reviewId,
-//   routeId,
-//   limit = 10,
-//   offset = 0,
-// }) => {
-//   // 리뷰 목록 및 전체 개수 조회
-//   const { review, count } = await reviewRepository.findByRouteId({
-//     roadId,
-//     limit,
-//     offset,
-//   });
-// };
+export const getRoadReviews = async ({ routeId, limit = 10, offset = 0 }) => {
+  // 파라미터 검증하기~
+  if (!routeId) throw new Error("경로 ID 필수");
+  if (limit < 0 || offset < 0) throw new Error("잘못된 페이지 번호");
+
+  const { reviews, count } = await reviewRepository.findByRouteId({
+    routeId,
+    limit,
+    offset,
+  });
+
+  // DTO 변환
+  return {
+    reviews: reviews.map((review) => new ReviewDto(review)),
+    totalCount: count,
+  };
+};
