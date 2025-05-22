@@ -39,14 +39,14 @@ export default class SocialLoginService {
       await this.repo.updateLastLogin(user.userId);
     }
 
+    const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
     await this.repo.saveSocialLogin(new SocialLoginDto({
       userId: user.userId,
-      accessToken,
+      accessToken: token,
       email,
       platform: 'kakao',
     }));
-
-    const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
     return { token };
   }
@@ -79,15 +79,16 @@ export default class SocialLoginService {
       await this.repo.updateLastLogin(user.userId);
     }
 
+    const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
     await this.repo.saveSocialLogin(new SocialLoginDto({
       userId: user.userId,
-      accessToken: access_token,
+      accessToken: token,
       email,
       platform: 'google',
     }));
 
-    const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '24h' });
-
+    
     return { token };
   }
 
