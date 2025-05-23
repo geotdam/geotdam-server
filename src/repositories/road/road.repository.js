@@ -14,3 +14,4 @@ export const create = async ({ userId, name, description, avgRates }) => {
     throw error;
   }
 };
+
