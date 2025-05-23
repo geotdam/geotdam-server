@@ -1,19 +1,20 @@
-import roadSearchService from "../../services/road/road.search.service.js"
+import roadSearchService from "../../services/road/road.search.service.js";
+import { InvalidInputError } from "../../utils/errors/errors.js";
+import { OkSuccess } from "../../utils/success/success.js";
 
-export const roadSearch = async (res, req, next) => {
+export const roadSearch = async (req, res, next) => {
+  try {
+    const query = req.query.query?.trim();
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 6;
 
-    try {
-    
-        const query = req.query.query; // 요청으로 들어온 쿼리 변수에 담기 
-
-        if (!query) {
-        throw new InvalidInputError('검색어(query)는 필수입니다.');
-        } // 검색어 입력 안했을 때 처리  
-
-    }catch(error){
-        next(error); // 에러 핸들링 
+    if (!query) {
+      throw new InvalidInputError("검색어는 공백이거나 빈 문자열일 수 없습니다.");
     }
 
-
-} // 루트 검색 컨트롤러  
-
+    const results = await roadSearchService.searchByKeyword(query, page, size);
+    return res.status(200).json(new OkSuccess(results));
+  } catch (error) {
+    next(error);
+  }
+};

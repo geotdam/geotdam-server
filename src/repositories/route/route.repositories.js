@@ -3,7 +3,6 @@ const { places, routes, placeRoutes } = db;
 import { Sequelize } from 'sequelize';
 
 
-
 export const savePlaceRoutes = async (routeId, placeInputs) => {
   for (const place of placeInputs) {
     const point = Sequelize.fn('ST_PointFromText', `POINT(${place.lng} ${place.lat})`);

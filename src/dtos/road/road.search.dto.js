@@ -1,11 +1,24 @@
-export class RoadSearchDto{
-  constructor(routeId, name, description, like_count, review_count, thumnail_url){
-    this.routeId = routeId;
-    this.name =name;
-    this.description= description;
-    this.like_count= like_count;
-    this.review_count=review_count;
-    this.thumnail_url = thumnail_url; 
+export class RoadSearchDto {
+  constructor({ route_id, name, description, images, reviews, likes }) {
+    this.routeId = route_id;
+    this.name = name;
+    this.description = description;
+
+    // 대표 이미지 1개 추출
+    this.thumbnail_url = images?.[0]?.routeImgUrl || null;
+
+    // 리뷰 수, 좋아요 수 계산
+    this.review_count = reviews?.length || 0;
+    this.like_count = likes?.length || 0;
+  }
 }
 
-}// 루트 검색 반환 dto 
+
+export class RoadSearchResponseDto {
+  constructor({ totalCount, page, size, roads }) {
+    this.totalCount = totalCount;
+    this.page = page;
+    this.size = size;
+    this.roads = roads;
+  }
+}
