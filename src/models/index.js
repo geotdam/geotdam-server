@@ -61,9 +61,11 @@ Object.keys(db).forEach((modelName) => {
     db[modelName].associate(db);
   }
 });
+console.log('✅ Routes의 관계:', Object.keys(db.Routes?.associations || {})); // <-- ✅ 2단계
 
 // Sequelize 인스턴스와 등록된 모델 export
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
 
 export default db;

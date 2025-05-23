@@ -1,7 +1,6 @@
-import db from "../../models/index.js"
+import db from "../../models/index.js";
 
-
-//루트 키워드로 검색하기 
+// 루트 키워드로 검색하기
 export const findRoadByKeyword = async (keyword, offset = 0, limit = 6) => {
   return await db.Routes.findAndCountAll({
     where: {
@@ -12,22 +11,5 @@ export const findRoadByKeyword = async (keyword, offset = 0, limit = 6) => {
     },
     offset,
     limit,
-    include: [
-      {
-        model: db.RouteImgs,
-        attributes: ['routeImgUrl'],
-        separate: true,
-        limit: 1,
-        order: [['createdAt', 'ASC']]
-      },
-      {
-        model: db.Reviews,
-        attributes: ['reviewId']
-      },
-      {
-        model: db.RouteLikes,
-        attributes: ['likeId']
-      }
-    ]
   });
 };
