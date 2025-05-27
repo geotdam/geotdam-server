@@ -18,7 +18,9 @@ export const saveJwtToken = async ({ userId, jwtToken }) => {
 // 회원정보 조회
 export const findUserById = async ({ userId }) => {
   try {
-    return await models.Users.findOne({ where: { userId: userId } });
+    return await models.Users.findOne({
+      where: { userId: userId, status: "active" },
+    });
     /**
      * 일단 userId를 통해 알 수 있는 모든 컬럼들 다 제공하도록 출력 했구여,
      * 혹시 추후에 "이건 좀 뺍시다~ 너무 보안상 안좋을 것 같아여" 싶은 건 리펙토링 때 include로 수정할게여 -이안
@@ -32,7 +34,7 @@ export const findUserById = async ({ userId }) => {
 export const updateUser = async ({ userId, updateData }) => {
   try {
     const [updateInfo] = await models.Users.update(updateData, {
-      where: { userId: userId },
+      where: { userId: userId, status: "active" },
     });
 
     if (updateInfo === 0)

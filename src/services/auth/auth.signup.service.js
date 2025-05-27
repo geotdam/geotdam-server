@@ -84,7 +84,7 @@ export const login = async ({ email, password }) => {
 // 회원정보 조회하기
 export const getUserInfo = async ({ userId }) => {
   const user = await userRepository.findUserById({ userId });
-  if (!user) throw new Error("사용자를 찾을 수 없습니다.");
+  if (!user) throw new Error("활성화된 사용자를 찾을 수 없습니다.");
   return user;
 };
 
@@ -100,7 +100,7 @@ export const update = async ({
   address,
 }) => {
   const user = await userRepository.findUserById({ userId });
-  if (!user) throw new Error("사용자를 찾을 수 없습니다.");
+  if (!user) throw new Error("활성화된 사용자를 찾을 수 없습니다.");
 
   let hashedPassword; // 비번 바꿀 때 암호화해야돼서 해시로...
   if (password) {
