@@ -2,9 +2,11 @@ import {
   InvalidInputError,
   NotExistsError,
 } from "../utils/errors/errors.js";
+import axios from 'axios';
 import { OkSuccess } from "../utils/success/success.js"; 
 import { latestLocations } from "../sockets/locationSocket.js";
 import { getNearbyBenches } from "../services/marking/osm.service.js";
+
 
 export const updateLocation = (req, res, next) => {
   const userId = req.user.userId;
@@ -43,21 +45,30 @@ export const getBenchLocation = async (req, res, next) => {
 
     const userLocation = latestLocations[userId];
     if (!userLocation) {
-      throw new NotExistsError("현재 위치 정보가 없습니다. 위치를 먼저 전송해주세요.");
+      return res.status(400).json({
+        isSuccess: false,
+        code: "COMMON4001",
+        message: "현재 위치를 가져올 수 없습니다",
+        result: null,
+      });
     }
 
     const { latitude, longitude } = userLocation;
 
     const benches = await getNearbyBenches(latitude, longitude, 1000); // 반경 1km
 
-    return res.status(200).json({
-      isSuccess: true,
-      code: "COMMON200",
-      message: "성공입니다.",
-      result: {
-        benches,
-      },
-    });
+    if (!benches || benches.length === 0) {
+     throw new NotExistsError("반경 1km 이내에 벤치가 없습니다.");
+    }
+
+     return res.status(200).json(
+      new OkSuccess(
+        {
+          benches,
+        },
+        "벤치 데이터 가져오기 성공"
+      )
+    );
   } catch (error) {
     next(error);
   }
@@ -85,10 +96,22 @@ export const getNearbyBenchesByQuery = async (req, res, next) => {
     // 벤치 위치 조회
     const benches = await getNearbyBenches(latitude, longitude, 1000); // 반경 1km
 
-    // 각 벤치에 대해 reverse geocoding 수행 (주소명 포함)
+    if (!benches || benches.length === 0) {
+      return res.status(404).json({
+        isSuccess: false,
+        code: "COMMON404",
+        message: "반경 1km 이내에 벤치가 없습니다.",
+        result: null,
+      });
+    }
+
+    // 각 벤치에 대해 reverse geocoding 수행 및 상세 정보 포함
     const enrichedBenches = await Promise.all(
       benches.map(async (bench) => {
-        const { lat, lon } = bench;
+        const { id, lat, lon, tags } = bench;
+        let name = null;
+        let address = null;
+
         try {
           const response = await axios.get(
             `https://nominatim.openstreetmap.org/reverse`,
@@ -104,25 +127,33 @@ export const getNearbyBenchesByQuery = async (req, res, next) => {
             }
           );
 
-          return {
-            lat,
-            lon,
-          };
+          const data = response.data;
+          name = data.name || data.display_name || "장소명";
+          address = data.display_name || "주소";
         } catch (e) {
-          return {
-            lat,
-            lon,
-          };
+          name = "장소명";
+          address = "주소";
         }
+
+        return {
+          name,
+          address,
+          id,
+          lat,
+          lon,
+          tags,
+        };
       })
     );
 
-    return res.status(200).json({
-      isSuccess: true,
-      code: "COMMON200",
-      message: "가까운 벤치 목록 조회 성공",
-      result: enrichedBenches,
-    });
+    return res.status(200).json(
+      new OkSuccess(
+        {
+         benches: enrichedBenches,
+        },
+        "가까운 벤치 데이터 가져오기 성공"
+      )
+    );
   } catch (error) {
     next(error);
   }

@@ -1,13 +1,50 @@
-// src/services/maps/place.service.js
 import axios from 'axios';
 import { TMAP_API_KEY } from '../../../config/tmap.config.js';
 import { PlaceResponseDto } from '../../dtos/maps/place.dto.js';
 
-export const searchPlacesFromTmap = async (query) => {
-  const res = await axios.get('https://apis.openapi.sk.com/tmap/pois', {//tmap api 담아오기
-    headers: {
-      appKey: TMAP_API_KEY,
+// 상세정보 요청 함수
+const getPlaceDetailFromTmap = async (poiId) => {
+  const url = `https://apis.openapi.sk.com/tmap/pois/${poiId}`; // api 호출 
+
+  const res = await axios.get(url, {
+    headers: { appKey: TMAP_API_KEY },
+    params: {
+      version: 1,
+      format: 'json',
     },
+  });
+
+  const poi = res.data.poiDetailInfo;
+
+  return {
+  name: poi.name,
+  place_id: poi.id,
+  location: `${poi.frontLat},${poi.frontLon}`,
+  address: poi.fullAddress ?? "",
+
+  tel: poi.tel ?? null,
+  additionalInfo: poi.additionalInfo?.trim() || null, //빈문자열 체크해주기!  
+  point: poi.point && poi.point !== '' ? Number(poi.point) : 0,
+  participant: poi.participant && poi.participant !== '' ? Number(poi.participant) : 0,
+  
+  jibunAddress: poi.newAddress ?? null,
+  roadAddress: poi.roadName ?? null,
+  bizCategory: poi.bizCatName ?? null,
+  menuInfo: poi.menuInfo ?? null,
+  franchise: poi.franchiseYn === 'Y',
+  facilities: {
+    parking: poi.parkFlag === 'Y',
+    chargingStation: poi.evChargers ?? [],
+    toilet: poi.toiletFlag === 'Y',
+  },
+};
+
+};
+
+//장소 검색 후 상세정보 포함 반환
+export const searchPlacesFromTmap = async (query) => {
+  const res = await axios.get('https://apis.openapi.sk.com/tmap/pois', {
+    headers: { appKey: TMAP_API_KEY },
     params: {
       version: 1,
       format: 'json',
@@ -18,18 +55,15 @@ export const searchPlacesFromTmap = async (query) => {
     },
   });
 
-  const pois = res.data.searchPoiInfo?.pois?.poi || [];
-  //console.log('📦 Tmap 응답:', JSON.stringify(res.data, null, 2)); 
+  const pois = res.data?.searchPoiInfo?.pois?.poi || [];
 
-  // 여기서 DTO로 가공
-  return pois.map((poi) =>
-    new PlaceResponseDto({
-      name: poi.name,
-      place_id: poi.id,
-      location: `${poi.frontLat},${poi.frontLon}`, // 위도,경도 문자열
-      address: `${poi.upperAddrName ?? ''} ${poi.middleAddrName ?? ''} ${poi.roadName ?? ''} ${poi.firstBuildNo ?? ''}`.trim(),
-    })
+  // 각 장소에 대해 상세 정보 병렬 조회
+  const detailedPlaces = await Promise.all(
+    pois.map((poi) => getPlaceDetailFromTmap(poi.id))
   );
+
+  // DTO로 변환
+  return detailedPlaces.map((place) => new PlaceResponseDto(place));
 };
 
 
