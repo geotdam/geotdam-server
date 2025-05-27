@@ -89,13 +89,41 @@ export const getUserInfo = async ({ userId }) => {
 };
 
 // 회원 정보 수정
-// export const correction = async ({
-//   password,
-//   name,
-//   nickname,
-//   birth,
-//   gender,
-//   address,
-// }) => {
-//   const user = await
-// };
+export const update = async ({
+  // 회원가입할 때랑 똑같은 json 형식으로 수정가능한 걸로 생각
+  userId,
+  password,
+  name,
+  nickname,
+  birth,
+  gender,
+  address,
+}) => {
+  const user = await userRepository.findUserById({ userId });
+  if (!user) throw new Error("사용자를 찾을 수 없습니다.");
+
+  let hashedPassword; // 비번 바꿀 때 암호화해야돼서 해시로...
+  if (password) {
+    hashedPassword = await bcrypt.hash(password, 10);
+  }
+
+  const updateData = {
+    ...(name && { name }),
+    ...(nickname && { nickname }),
+    ...(birth && { birth }),
+    ...(gender && { gender }),
+    ...(address && { address }),
+    ...(hashedPassword && { password: hashedPassword }),
+  };
+
+  const updatedUser = await userRepository.updateUser({ userId, updateData });
+
+  return {
+    userId: updatedUser.id,
+    name: updatedUser.name,
+    nickname: updatedUser.nickname,
+    birth: updatedUser.birth,
+    gender: updatedUser.gender,
+    address: updatedUser.address,
+  };
+};

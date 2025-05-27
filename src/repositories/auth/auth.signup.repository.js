@@ -27,3 +27,22 @@ export const findUserById = async ({ userId }) => {
     throw new Error("사용자 조회 중 오류가 발생하였습니다.");
   }
 };
+
+// 회원정보 수정
+export const updateUser = async ({ userId, updateData }) => {
+  try {
+    const [updateInfo] = await models.Users.update(updateData, {
+      where: { userId: userId },
+    });
+
+    if (updateInfo === 0)
+      throw new Error("회원정보 업데이트에 실패하였습니다. 다시 시도해주세요.");
+
+    return await models.Users.findOne({
+      where: { userId: userId },
+      attributes: { exclude: ["password"] }, // 비번
+    });
+  } catch (error) {
+    throw new Error("회원정보 수정에 실패하였습니다: " + error.message);
+  }
+};

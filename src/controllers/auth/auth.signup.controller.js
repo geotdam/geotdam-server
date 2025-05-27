@@ -40,7 +40,10 @@ export const userInfo = async (req, res) => {
 // 회원정보 수정하기
 export const update = async (req, res) => {
   try {
-    const result = await authService.update(req.body);
+    const result = await authService.update({
+      userId: req.user.userId, // JWT 토큰으로 응응..
+      ...req.body,
+    });
     res.status(200).json(result);
   } catch (e) {
     res.status(400).json({ message: e.message });
