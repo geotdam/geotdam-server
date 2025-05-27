@@ -28,6 +28,4 @@ router.get("/", authenticateJWT, userController.userInfo);
 // 회원 정보 수정
 router.put("/", authenticateJWT, userController.update);
 
-// 회원 비활성화 삭제하기
-
 export default router;
