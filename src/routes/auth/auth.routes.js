@@ -1,12 +1,12 @@
-// src/routes/auth/authRoutes.js
 import express from "express";
 import {
   kakaoLoginRedirect,
   kakaoCallback,
   googleLoginRedirect,
-  googleCallback
+  googleCallback,
 } from "../../controllers/auth/auth.controller.js";
 import * as userController from "../../controllers/auth/auth.signup.controller.js";
+import authenticateJWT from "../../middlewares/authenticate.jwt.js";
 
 const router = express.Router();
 
@@ -21,5 +21,11 @@ router.get("/callback/google", googleCallback);
 router.post("/signup", userController.register);
 // 로그인
 router.post("/login", userController.login);
+
+// 회원 정보 불러오기
+router.get("/", authenticateJWT, userController.userInfo);
+
+// 회원 정보 수정
+router.put("/", authenticateJWT, userController.update);
 
 export default router;
