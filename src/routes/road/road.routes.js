@@ -16,7 +16,7 @@ router.post("/:routeId/reviews", authenticateJWT, roadController.newReview);
 router.get("/:routeId/reviews", authenticateJWT, roadController.listReview);
 
 // 루트 검색 페이징 
-router.get("/search",roadSearch);
+router.get("/search",authenticateJWT, roadSearch);
 
 //루트 sns 링크 생성 
 router.post("/:routeId/share", authenticateJWT, createShareLink);

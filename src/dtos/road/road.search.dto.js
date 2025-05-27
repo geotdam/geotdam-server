@@ -1,14 +1,13 @@
 export class RoadSearchDto {
-  constructor({ route_id, name, description, routeImgs, dataValues }) {
-    this.routeId = route_id;
+  constructor({ routeId, name, description, like_count, review_count, thumbnail_url }) {
+    this.routeId = routeId;
     this.name = name;
     this.description = description;
-    this.thumbnail_url = routeImgs?.[0]?.routeImgUrl || null;
-    this.review_count = Number(dataValues?.review_count) || 0;
-    this.like_count = Number(dataValues?.like_count) || 0;
+    this.like_count = like_count;
+    this.review_count = review_count;
+    this.thumbnail_url = thumbnail_url;
   }
 }
-
 
 export class RoadSearchResponseDto {
   constructor({ totalCount, page, size, roads }) {
