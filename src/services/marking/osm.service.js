@@ -14,3 +14,4 @@ export const getNearbyBenches = async (latitude, longitude, radius = 1000) => {
     throw error;
   }
 };
+

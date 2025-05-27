@@ -31,3 +31,28 @@ export const searchPlacesFromTmap = async (query) => {
     })
   );
 };
+
+
+//좌표->구변환
+export const getGuFromCoordinates = async (lat, lng) => {
+  try {
+    const response = await axios.get('https://apis.openapi.sk.com/tmap/geo/reversegeocoding', {
+      params: {
+        version: 1,
+        lat,
+        lon: lng,
+        coordType: 'WGS84GEO',
+        addressType: 'A10'
+      },
+      headers: {
+        appKey: TMAP_API_KEY
+      }
+    });
+
+    const fullAddress = response.data.addressInfo;
+    return fullAddress.gu; // 강남구, 송파구 등
+  } catch (error) {
+    console.error('역지오코딩 실패:', error.message);
+    throw error;
+  }
+};

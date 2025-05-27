@@ -33,3 +33,7 @@ export const savePlaceRoutes = async (routeId, placeInputs) => {
     });
   }
 };
+export const getRouteById = async (routeId) => {
+  return await routes.findByPk(routeId);
+};
+
