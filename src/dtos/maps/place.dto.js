@@ -6,12 +6,22 @@ export class PlaceResponseDto {
     this.place_name = place.name;
     this.place_id = place.place_id;
 
-    // location 필드를 위도(lat), 경도(lng)로 분리
     const [lat, lng] = (place.location || "").split(",").map(parseFloat);
     this.lat = lat;
     this.lng = lng;
 
     this.address = place.address;
+
+    this.tel = place.tel ?? null;   // 전화번호 
+    this.additionalInfo = place.additionalInfo ?? null; // 상세정보 
+    this.point = place.point ?? null; // 별점 점수 
+    this.participant = place.participant ?? null;// 별점 참여자 수 
+    this.jibunAddress = place.jibunAddress ?? null;       // 지번 주소
+    this.roadAddress = place.roadAddress ?? null;         // 도로명 주소
+    this.bizCategory = place.bizCategory ?? null;         // 업종
+    this.menuInfo = place.menuInfo ?? null;               // 판매 메뉴
+    this.franchise = place.franchise ?? null;             // 가맹점 여부
+    this.facilities = place.facilities ?? null;           // 부대시설 정보 (ex: 충전소 등)
   }
 }
 
