@@ -4,7 +4,7 @@ import { PlaceResponseDto } from '../../dtos/maps/place.dto.js';
 
 // 상세정보 요청 함수
 const getPlaceDetailFromTmap = async (poiId) => {
-  const url = `https://apis.openapi.sk.com/tmap/pois/${poiId}`;
+  const url = `https://apis.openapi.sk.com/tmap/pois/${poiId}`; // api 호출 
 
   const res = await axios.get(url, {
     headers: { appKey: TMAP_API_KEY },
@@ -23,9 +23,9 @@ const getPlaceDetailFromTmap = async (poiId) => {
   address: poi.fullAddress ?? "",
 
   tel: poi.tel ?? null,
-  additionalInfo: poi.additionalInfo?.trim() || null,
-  point: poi.point && poi.point !== '' ? Number(poi.point) : null,
-  participant: poi.participant && poi.participant !== '' ? Number(poi.participant) : null,
+  additionalInfo: poi.additionalInfo?.trim() || null, //빈문자열 체크해주기!  
+  point: poi.point && poi.point !== '' ? Number(poi.point) : 0,
+  participant: poi.participant && poi.participant !== '' ? Number(poi.participant) : 0,
   
   jibunAddress: poi.newAddress ?? null,
   roadAddress: poi.roadName ?? null,
