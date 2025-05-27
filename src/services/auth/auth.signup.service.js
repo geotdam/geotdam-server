@@ -32,16 +32,6 @@ export const register = async ({
     status: "active", // 일단 가입하는 사람 active로 초기화
   });
 
-  // return new UserDto({
-  //   userId: user.userId,
-  //   email: user.email,
-  //   name: user.name,
-  //   nickname: user.nickname,
-  //   birth: user.birth,
-  //   gender: user.gender,
-  //   address: user.address,
-  // });
-
   return {
     user: new UserDto({
       userId: user.userId,
@@ -88,5 +78,52 @@ export const login = async ({ email, password }) => {
       gender: user.gender,
       address: user.address,
     }),
+  };
+};
+
+// 회원정보 조회하기
+export const getUserInfo = async ({ userId }) => {
+  const user = await userRepository.findUserById({ userId });
+  if (!user) throw new Error("활성화된 사용자를 찾을 수 없습니다.");
+  return user;
+};
+
+// 회원 정보 수정
+export const update = async ({
+  // 회원가입할 때랑 똑같은 json 형식으로 수정가능한 걸로 생각
+  userId,
+  password,
+  name,
+  nickname,
+  birth,
+  gender,
+  address,
+}) => {
+  const user = await userRepository.findUserById({ userId });
+  if (!user) throw new Error("활성화된 사용자를 찾을 수 없습니다.");
+
+  let hashedPassword; // 비번 바꿀 때 암호화해야돼서 해시로...
+  if (password) {
+    hashedPassword = await bcrypt.hash(password, 10);
+  }
+
+  const updateData = {
+    ...(name && { name }),
+    ...(nickname && { nickname }),
+    ...(birth && { birth }),
+    ...(gender && { gender }),
+    ...(address && { address }),
+    ...(hashedPassword && { password: hashedPassword }),
+  };
+
+  const updatedUser = await userRepository.updateUser({ userId, updateData });
+
+  return {
+    userId: updatedUser.id,
+    name: updatedUser.name,
+    nickname: updatedUser.nickname,
+    birth: updatedUser.birth,
+    gender: updatedUser.gender,
+    address: updatedUser.address,
   };
 };
