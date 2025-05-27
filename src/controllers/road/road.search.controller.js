@@ -1,4 +1,4 @@
-import roadSearchService from "../../services/road/road.search.service.js";
+import {roadSearchService} from "../../services/road/road.search.service.js";
 import { InvalidInputError } from "../../utils/errors/errors.js";
 import { OkSuccess } from "../../utils/success/success.js";
 
