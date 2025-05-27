@@ -32,16 +32,6 @@ export const register = async ({
     status: "active", // 일단 가입하는 사람 active로 초기화
   });
 
-  // return new UserDto({
-  //   userId: user.userId,
-  //   email: user.email,
-  //   name: user.name,
-  //   nickname: user.nickname,
-  //   birth: user.birth,
-  //   gender: user.gender,
-  //   address: user.address,
-  // });
-
   return {
     user: new UserDto({
       userId: user.userId,
@@ -90,3 +80,22 @@ export const login = async ({ email, password }) => {
     }),
   };
 };
+
+// 회원정보 조회하기
+export const getUserInfo = async ({ userId }) => {
+  const user = await userRepository.findUserById({ userId });
+  if (!user) throw new Error("사용자를 찾을 수 없습니다.");
+  return user;
+};
+
+// 회원 정보 수정
+// export const correction = async ({
+//   password,
+//   name,
+//   nickname,
+//   birth,
+//   gender,
+//   address,
+// }) => {
+//   const user = await
+// };
