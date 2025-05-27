@@ -5,7 +5,7 @@ export const getCctvMarkings = async (placeGu) => {
   try {
     const CCTVAPI_KEY = process.env.CCTV_KEY; // 환경변수에서 인증키 가져오기
     if (!CCTVAPI_KEY) throw new Error('CCTV API Key가 설정되어 있지 않습니다.');
-    console.log(placeGu);
+    
     const serviceName = 'safeOpenCCTV';
     const type = 'xml';
     const startIndex = 1;
@@ -46,7 +46,7 @@ export const getCctvMarkings = async (placeGu) => {
 
 
 //가로등 마킹 불러오기
-export const getStreetLampMarkings = async (latitude, longitude, radius = 1000) => {
+export const getStreetLampMarkings = async (latitude, longitude, radius = 3000) => {
   const query = `[out:json];node["amenity"="bench"](around:${radius},${latitude},${longitude});out;`;
   const url = 'https://overpass-api.de/api/interpreter';
 
