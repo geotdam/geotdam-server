@@ -5,7 +5,7 @@ import { roadSearch } from "../../controllers/road/road.search.controller.js";
 import * as roadController from "../../controllers/road/road.controller.js";
 const router = express.Router();
 
-// 나만의 루트 생성 (일단 더미 데이터로 처리 -- 추후에 효림언니 여기서 수정하면 돼여~.~)
+// 나만의 루트 생성
 router.post("/", authenticateJWT, roadController.newRoad);
 
 // 루트 리뷰 생성
