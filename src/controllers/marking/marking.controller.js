@@ -2,17 +2,21 @@ import { getCctvMarkings } from '../../services/marking/marking.service.js';
 import { InvalidInputError } from '../../utils/errors/errors.js';
 import { OkSuccess } from '../../utils/success/success.js';
 import { getNearbyStreetLamps } from '../../services/marking/osm.service.js';
+import axios from 'axios';
 
 //CCTV 데이터
 export const MyRouteMarkings = async (req, res, next) => {
-  try {
-    const placeGu = req.query.placeGu;  
-       if (!placeGu) {
-      // placeGu가 없으면 400 에러 응답 처리 (선택사항)
-      throw new InvalidInputError('placeGu query parameter is required.');
-    }
-    //console.log("요청받은 routeId:", routeId);
-    // CCTV와 가로등 마킹 정보 가져오기
+try {
+
+      const latitude = parseFloat(req.query.latitude);
+      const longitude = parseFloat(req.query.longitude);
+
+      if (isNaN(latitude) || isNaN(longitude)) {
+        throw new Error("유효한 위도(latitude)와 경도(longitude)를 입력하세요.");
+      }
+
+    const placeGu = await getGuFromCoordinates(latitude, longitude);
+    // CCTV마킹 정보 가져오기
     const cctvResult = await getCctvMarkings(placeGu);
 
     const combinedMarkings = [...cctvResult];  //, ...lampResult
@@ -60,4 +64,27 @@ export const MyRouteStreetLight = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+//위경도 받아서 구로 바꾸기
+
+const getGuFromCoordinates = async (latitude, longitude) => {
+  const url = 'https://apis.openapi.sk.com/tmap/geo/reversegeocoding';
+  const params = {
+    version: 1,
+    lat: latitude,
+    lon: longitude,
+    coordType: 'WGS84GEO',
+    addressType: 'A10'
+  };
+
+  const headers = {
+    appKey: process.env.TMAP_API_KEY
+  };
+
+  const { data } = await axios.get(url, { params, headers });
+
+  const gu = data?.addressInfo?.gu_gun;
+  if (!gu) throw new Error("구 정보를 가져올 수 없습니다.");
+  return gu;
 };
