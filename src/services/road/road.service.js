@@ -53,3 +53,28 @@ export const getRoadReviews = async ({ routeId, limit = 10, offset = 0 }) => {
     totalCount: count,
   };
 };
+
+// 루트 리뷰 수정
+export const updateReview = async ({ reviewId, userId, comment, rates }) => {
+  // 디버깅용 콘솔 로그
+  // console.log("reviewId: " + reviewId);
+  // console.log("userId: " + userId);
+
+  if (!reviewId || !userId) throw new Error("필수 필드가 누락되었습니다.");
+  if (rates !== undefined && (rates < 0 || rates > 5))
+    throw new Error("평점은 0~5점까지 가능합니다.");
+
+  // 리뷰 존재하는지 확인, 본인 수정인지 확인
+  const review = await reviewRepository.findById(reviewId);
+  if (!review) throw new Error("리뷰가 존재하지 않습니다.");
+  if (review.userId !== userId) throw new Error("본인만 수정할 수 있습니다.");
+
+  // 수정
+  const update = await reviewRepository.updateReview({
+    reviewId,
+    comment,
+    rates,
+  });
+
+  return new ReviewDto(update);
+};

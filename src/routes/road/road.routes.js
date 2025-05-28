@@ -15,10 +15,23 @@ router.post("/:routeId/reviews", authenticateJWT, roadController.newReview);
 // 루트 리뷰 조회 (페이징)
 router.get("/:routeId/reviews", authenticateJWT, roadController.listReview);
 
-// 루트 검색 페이징 
-router.get("/search",authenticateJWT, roadSearch);
+// 루트 리뷰 수정
+router.put("/reviews/:reviewId", authenticateJWT, roadController.updateReview);
 
-//루트 sns 링크 생성 
+/**
+ * 잘 못 생각해서.. 필요없는 라우터입니다..~
+ *
+ * // 루트에 별점 추가하기
+ * router.post("/:routeId/rates", authenticateJWT, roadController.newRates);
+ *
+ * // 루트에 별점 추가했던 거 수정하기
+ * router.put("/:routeId/rates", authenticateJWT, roadController.updateRates);
+ */
+
+// 루트 검색 페이징
+router.get("/search", authenticateJWT, roadSearch);
+
+//루트 sns 링크 생성
 router.post("/:routeId/share", authenticateJWT, createShareLink);
 
 export default router;

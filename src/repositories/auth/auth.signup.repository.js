@@ -45,6 +45,6 @@ export const updateUser = async ({ userId, updateData }) => {
       attributes: { exclude: ["password"] }, // 비번
     });
   } catch (error) {
-    throw new Error("회원정보 수정에 실패하였습니다: " + error.message);
+    throw new Error("회원정보 수정 실패: " + error.message);
   }
 };
