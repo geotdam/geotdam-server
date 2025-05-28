@@ -29,7 +29,8 @@ export const getCctvMarkings = async (placeGu) => {
     const rows = result.safeOpenCCTV.row || [];
 
     // 마킹 배열 만들기
-    const markings = rows.map((item) => ({
+    const markings = rows.map((item, index) => ({
+      id: index + 1, // 1부터 시작하는 고유 번호 부여
       markingType: 'CCTV',
       lat: parseFloat(item.WGSXPT[0]),
       lng: parseFloat(item.WGSYPT[0]),
