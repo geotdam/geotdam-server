@@ -30,3 +30,30 @@ export const findByRouteId = async ({ routeId, limit, offset }) => {
     throw new Error(`리뷰 조회 실패: ${error.message}`);
   }
 };
+
+// 루트 리뷰 수정
+// 리뷰 하나 조회 -> 리뷰 존재하는지 확인, 본인 수정인지 확인 (1차적으로 확인하고~)
+export const findById = async (reviewId) => {
+  try {
+    return await models.Reviews.findByPk(reviewId);
+  } catch (error) {
+    throw new Error(`리뷰 조회에 실패: ${error.message}`);
+  }
+};
+
+export const updateReview = async ({ reviewId, comment, rates }) => {
+  try {
+    const updateFields = {};
+    if (comment !== undefined) updateFields.comment = comment;
+    if (rates !== undefined) updateFields.rates = rates;
+
+    // 업데이트
+    await models.Reviews.update(updateFields, {
+      where: { reviewId: reviewId },
+    });
+
+    return await models.Reviews.findByPk(reviewId);
+  } catch (error) {
+    throw new Error(`리뷰 수정 실패: ${error.message}`);
+  }
+};

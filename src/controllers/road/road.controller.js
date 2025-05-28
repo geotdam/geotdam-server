@@ -37,3 +37,27 @@ export const listReview = async (req, res) => {
     res.status(400).json({ message: e.message });
   }
 };
+
+// 루트 리뷰 수정
+export const updateReview = async (req, res) => {
+  try {
+    const reviewId = req.params.reviewId;
+    const userId = req.user.userId; // JWT에서 가져오깅 (본인만 수정 가능하게)
+    const { comment, rates } = req.body;
+
+    // 디버깅용 콘솔 로그
+    // console.log("reviewId: " + reviewId);
+    // console.log("userId: " + userId);
+
+    const update = await roadService.updateReview({
+      reviewId,
+      userId,
+      comment,
+      rates,
+    });
+
+    res.status(200).json(update);
+  } catch (e) {
+    res.status(400).json({ message: e.message });
+  }
+};
