@@ -11,6 +11,7 @@ export class PlaceResponseDto {
     this.lng = lng;
 
     this.address = place.address;
+    this.thumbnail_url = place.thumbnail_url ?? null;//이미지 url 
 
     this.tel = place.tel ?? null;   // 전화번호 
     this.additionalInfo = place.additionalInfo ?? null; // 상세정보 
