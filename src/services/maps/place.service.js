@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { TMAP_API_KEY } from '../../../config/tmap.config.js';
 import { PlaceResponseDto } from '../../dtos/maps/place.dto.js';
+import { getPlaceImageUrl } from '../external/placeImage.service.js' //이미지 서비스 호출 
 
-// 상세정보 요청 함수
+
+// 검색 상세정보 요청 함수
 const getPlaceDetailFromTmap = async (poiId) => {
   const url = `https://apis.openapi.sk.com/tmap/pois/${poiId}`; // api 호출 
 
@@ -15,6 +17,7 @@ const getPlaceDetailFromTmap = async (poiId) => {
   });
 
   const poi = res.data.poiDetailInfo;
+  const thumbnail_url = await getPlaceImageUrl(poi.name);
 
   return {
   name: poi.name,
@@ -37,6 +40,7 @@ const getPlaceDetailFromTmap = async (poiId) => {
     chargingStation: poi.evChargers ?? [],
     toilet: poi.toiletFlag === 'Y',
   },
+  thumbnail_url: thumbnail_url,
 };
 
 };
@@ -63,7 +67,10 @@ export const searchPlacesFromTmap = async (query) => {
   );
 
   // DTO로 변환
-  return detailedPlaces.map((place) => new PlaceResponseDto(place));
+  return detailedPlaces.map((place) => {
+  const dto = new PlaceResponseDto(place);
+  return dto;
+});
 };
 
 
