@@ -12,7 +12,7 @@ export default (sequelize, DataTypes) => {
         field: 'place_id'
       },
       placeImgUrl: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         field: 'place_img_url'
       },
       createdAt: {
