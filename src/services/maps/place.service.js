@@ -2,7 +2,7 @@ import axios from 'axios';
 import { TMAP_API_KEY } from '../../../config/tmap.config.js';
 import { PlaceResponseDto } from '../../dtos/maps/place.dto.js';
 import { getPlaceImageUrl } from '../external/placeImage.service.js' //이미지 서비스 호출 
-
+import { getGooglePlaceRating } from '../external/placeRating.service.js'; // 별점 서비스 호출 
 
 // 검색 상세정보 요청 함수
 const getPlaceDetailFromTmap = async (poiId) => {
@@ -17,8 +17,9 @@ const getPlaceDetailFromTmap = async (poiId) => {
   });
 
   const poi = res.data.poiDetailInfo;
-  const thumbnail_url = await getPlaceImageUrl(poi.name);
-
+  const thumbnail_url = await getPlaceImageUrl(poi.name);//이미지 처리 구글 api로 
+  const { rating, participant } = await getGooglePlaceRating(poi.name); // 별점이랑 별점 사용자 추가 
+  
   return {
   name: poi.name,
   place_id: poi.id,
@@ -27,8 +28,8 @@ const getPlaceDetailFromTmap = async (poiId) => {
 
   tel: poi.tel ?? null,
   additionalInfo: poi.additionalInfo?.trim() || null, //빈문자열 체크해주기!  
-  point: poi.point && poi.point !== '' ? Number(poi.point) : 0,
-  participant: poi.participant && poi.participant !== '' ? Number(poi.participant) : 0,
+  point:rating, //구글 api에서 갖고옴
+  participant: participant, //구글 api에서 갖고옴
   
   jibunAddress: poi.newAddress ?? null,
   roadAddress: poi.roadName ?? null,
@@ -74,7 +75,7 @@ export const searchPlacesFromTmap = async (query) => {
 };
 
 
-//좌표->구변환
+//좌표->구변환도 포함 
 export const getGuFromCoordinates = async (lat, lng) => {
   try {
     const response = await axios.get('https://apis.openapi.sk.com/tmap/geo/reversegeocoding', {
