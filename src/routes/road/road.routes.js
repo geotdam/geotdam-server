@@ -3,11 +3,15 @@ import authenticateJWT from "../../middlewares/authenticate.jwt.js";
 import express from "express";
 import { roadSearch } from "../../controllers/road/road.search.controller.js";
 import { createShareLink } from "../../controllers/road/road.share.controller.js";
+import { getRoadDetail } from "../../controllers/road/road.detail.controller.js";
 import * as roadController from "../../controllers/road/road.controller.js";
 const router = express.Router();
 
 // 나만의 루트 생성
 router.post("/", authenticateJWT, roadController.newRoad);
+
+// 루트 상세 조회
+router.get("/:routeId", authenticateJWT, getRoadDetail);
 
 // 루트 리뷰 생성
 router.post("/:routeId/reviews", authenticateJWT, roadController.newReview);
