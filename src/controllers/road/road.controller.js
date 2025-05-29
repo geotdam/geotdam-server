@@ -3,7 +3,11 @@ import * as roadService from "../../services/road/road.service.js";
 // 나만의 루트 생성
 export const newRoad = async (req, res) => {
   try {
-    const road = await roadService.newRoad(req.body);
+    const road = await roadService.newRoad({
+      ...req.body,
+      userId: req.user.userId, // JWT에서 가져오는거구여
+      routeId: req.params.routeId, // URL 파라미터에서 가져왔다네요
+    });
     res.status(201).json(road);
   } catch (e) {
     res.status(400).json({ message: e.message });

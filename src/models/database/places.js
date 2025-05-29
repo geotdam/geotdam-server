@@ -8,8 +8,8 @@ export default (sequelize, DataTypes) => {
         field: 'place_id'
       },
       name: DataTypes.STRING,
-      description: DataTypes.TEXT,
-      sequence: DataTypes.INTEGER,
+      phone: DataTypes.STRING,
+      open_hours: DataTypes.STRING, 
       createdAt: {
         type: DataTypes.DATE,
         field: 'created_at'
@@ -18,7 +18,7 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         field: 'updated_at'
       },
-      location: DataTypes.TEXT,
+      location: DataTypes.GEOMETRY('POINT'),
       address: DataTypes.TEXT
     }, {
       tableName: 'places',

@@ -12,7 +12,7 @@ export default (sequelize, DataTypes) => {
       field: 'route_id'
     },
     routeImgUrl: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       field: 'route_img_url'
     },
     createdAt: {
