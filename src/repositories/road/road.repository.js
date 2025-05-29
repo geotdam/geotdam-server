@@ -8,6 +8,8 @@ export const create = async ({ userId, name, description, avgRates }) => {
       name,
       description,
       avgRates,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
     return newRoute;
   } catch (error) {

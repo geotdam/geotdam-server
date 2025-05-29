@@ -8,6 +8,8 @@ export const create = async ({ name, phone, open_hours, location, address }) => 
       open_hours,
       location,
       address,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
     return newPlace;
   } catch (error) {

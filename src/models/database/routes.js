@@ -48,11 +48,11 @@ export default (sequelize, DataTypes) => {
       onDelete: 'CASCADE',  
       onUpdate: 'CASCADE'
      });
-    Routes.hasMany(models.Places, { foreignKey: 'routeId',
-      onDelete: 'CASCADE',  
+    Routes.hasMany(models.PlaceRoutes, { foreignKey: 'routeId',
+      onDelete: 'CASCADE',
       onUpdate: 'CASCADE'
     });
-    };
+  };
     return Routes;
   };
   
