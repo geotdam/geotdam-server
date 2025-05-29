@@ -18,7 +18,11 @@ export default (sequelize, DataTypes) => {
       isPrimaryPlace: {
         type: DataTypes.BOOLEAN,
         field: 'is_primary_place'
-      }
+      },
+      sequence: {
+        type: DataTypes.BIGINT,
+        field: 'sequence'
+      },
     }, {
       tableName: 'placeRoutes',
       timestamps: false
