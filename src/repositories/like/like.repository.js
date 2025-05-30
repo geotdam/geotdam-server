@@ -1,14 +1,12 @@
 import db from '../../models/index.js';
-const RouteLike = db.routesLikes; // models의 routesLikes 모델 참조
-
 
 // 7. 경로 좋아요 토글 (없으면 생성, 있으면 삭제)
 export const toggleRouteLike = async ({ user_id, route_id }) => {
   // 1. 현재 좋아요 상태 확인
-  const existingLike = await RouteLike.findOne({
+  const existingLike = await db.RouteLikes.findOne({
     where: {
-      user_id,
-      route_id,
+      userId: user_id,
+      routeId: route_id,
     },
   });
 
@@ -20,9 +18,9 @@ export const toggleRouteLike = async ({ user_id, route_id }) => {
       message: '좋아요가 취소되었습니다.',
     };
   } else {
-    await RouteLike.create({
-      user_id,
-      route_id,
+    await db.RouteLikes.create({
+      userId: user_id,
+      routeId: route_id,
     });
     return {
       liked: true,

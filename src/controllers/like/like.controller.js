@@ -2,7 +2,8 @@ import { toggleRouteLike } from '../../repositories/like/like.repository.js';
 import { OkSuccess } from '../../utils/success/success.js';
 import { NotExistsError } from '../../utils/errors/errors.js';
 import db from '../../models/index.js';
-const Route = db.routes;
+
+console.log('Available models:', Object.keys(db));
 
 export const handleRouteLikeToggle = async (req, res) => {
   try {
@@ -10,13 +11,13 @@ export const handleRouteLikeToggle = async (req, res) => {
     const routeId = parseInt(req.params.routeId);
 
     // 1. 사용자 존재 여부 확인
-    const user = await db.users.findByPk(userId);
+    const user = await db.Users.findByPk(userId);
     if (!user) {
       throw new NotExistsError("해당 사용자를 찾을 수 없습니다.");
     }
 
     // 2. 루트 존재 여부 확인
-    const route = await Route.findByPk(routeId);
+    const route = await db.Routes.findByPk(routeId);
     if (!route) {
       throw new NotExistsError("좋아요할 루트를 찾을 수 없습니다.");
     }
