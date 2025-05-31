@@ -8,6 +8,7 @@ import * as placeImgRepository from "../../repositories/place/place.img.reposito
 import RoadDto from "../../dtos/road/road.dto.js";
 import ReviewDto from "../../dtos/road/road.review.dto.js";
 import { getPlaceImageUrl } from "../external/placeImage.service.js";
+import { Sequelize } from "sequelize";
 
 // 나만의 루트 생성(및 장소 저장)
 export const newRoad = async ({
@@ -46,10 +47,7 @@ export const newRoad = async ({
         phone: place.phone || "정보없음",
         open_hours: place.open_hours || "정보없음",
         address: place.address,
-        location: {
-          type: "Point",
-          coordinates: [place.lng, place.lat],
-        },
+        location: Sequelize.fn('ST_GeomFromText', `POINT(${place.lng} ${place.lat})`),
       });
 
       // 이미지 저장

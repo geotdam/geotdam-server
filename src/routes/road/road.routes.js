@@ -10,7 +10,7 @@ import {
   getUserRoutes,
   getAllRoutes
 } from "../../controllers/road/road.list.controller.js";
-
+import { handleRecommendedRoutes } from '../../controllers/like/like.controller.js';
 const router = express.Router();
 
 // 나만의 루트 생성
@@ -27,6 +27,9 @@ router.get("/users/:userId", getUserRoutes);
 
 // 전체 루트 목록 (무한스크롤)
 router.get("/", getAllRoutes);
+
+// 좋아요 기준 추천 루트 조회
+router.get('/recommends', authenticateJWT, handleRecommendedRoutes);
 
 // 루트 상세 조회
 router.get("/:routeId", authenticateJWT, getRoadDetail);
