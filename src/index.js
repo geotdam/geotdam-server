@@ -19,6 +19,7 @@ import { errorHandler } from "./middlewares/errorHandler.js";
 import locationRouter from "./sockets/socket.routes.js";
 import markingRouter from "./routes/marking/marking.routes.js"
 import likeRouter from "./routes/likes/like.routes.js"
+import bookmarkRouter from "./routes/bookmark/bookmark.routes.js"
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.use("/api", routeRouter); //경로검색 라우터 등록
 app.use("/api", locationRouter);
 app.use("/api", markingRouter);
 app.use("/api", likeRouter);
+app.use("/api", bookmarkRouter);
 
 // 실시간 위치테스트용 기본 라우트
 app.get("/", (req, res) => {
