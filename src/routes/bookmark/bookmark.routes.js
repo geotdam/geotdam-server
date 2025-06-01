@@ -1,10 +1,12 @@
 import express from 'express';
-import { handleRouteBookmarkToggle } from '../../controllers/bookmark/bookmark.controller.js';
+import { handleRouteBookmarkToggle, handleGetUserBookmarks } from '../../controllers/bookmark/bookmark.controller.js';
 import { authenticateJWT } from '../../middlewares/authenticate.jwt.js';
 
 const router = express.Router();
 
 // 루트 북마크 토글 API
 router.post('/mypages/bookmarks/:routeId', authenticateJWT, handleRouteBookmarkToggle);
+// 커서 기반 북마크 목록 조회
+router.get('/mypages/bookmarks', authenticateJWT, handleGetUserBookmarks);
 
 export default router;

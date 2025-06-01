@@ -1,4 +1,4 @@
-import { toggleRouteBookmark } from '../../repositories/bookmark/bookmark.repository.js';
+import { toggleRouteBookmark, getUserBookmarksByCursor } from '../../repositories/bookmark/bookmark.repository.js';
 import { OkSuccess, NoContentSuccess } from '../../utils/success/success.js';
 import { NotExistsError } from '../../utils/errors/errors.js';
 import db from '../../models/index.js';
@@ -54,39 +54,48 @@ export const handleRouteBookmarkToggle = async (req, res) => {
   }
 };
 
-// export const handleRecommendedRoutes = async (req, res) => {
-//   try {
-//     // 1. cursor 파라미터 처리 (옵셔널)
-//     const cursor = req.query.cursor || null;
+export const handleGetUserBookmarks = async (req, res) => {
+  try {
+    // 1. cursor 파라미터 처리 (옵셔널)
+    const userId = req.user.userId;
+    const cursor = req.query.cursor ? parseInt(req.query.cursor) : null;
     
-//     // 2. 추천 경로 조회
-//     const result = await getRecommendedRoutes(cursor);
+    // 2. 북마크 조회
+    const user = await db.Users.findByPk(userId);
+      if (!user) {
+        throw new NotExistsError("해당 사용자를 찾을 수 없습니다.");
+      }
+    const result = await getUserBookmarksByCursor(userId, cursor);
 
-//     // 3. 결과가 없는 경우 204 응답
-//     if (!result || result.routes.length === 0) {
-//       return res.status(204).json({
-//         isSuccess: true,
-//         code: "COMMON204",
-//         message: "추천할 경로가 없습니다."
-//       });
-//     }
+    // 3. 결과가 없는 경우 204 응답
+    if (!result) {
+      return res.status(204).json({
+        isSuccess: true,
+        code: "COMMON204",
+        message: "북마크한 루트가 없습니다.",
+        result: [],
+        nextCursor: null,
+        hasNextPage: false
+      });
+    }
 
-//     // 4. 성공 응답 (페이지 정보 포함)
-//     return res.status(200).json({
-//       isSuccess: true,
-//       code: "COMMON200",
-//       message: "성공입니다.",
-//       result: result.routes,
-//       pageInfo: result.pageInfo
-//     });
+    // 4. 성공 응답 (페이지 정보 포함)
+    return res.status(200).json({
+      isSuccess: true,
+      code: "COMMON200",
+      message: "성공입니다.",
+      rresult: result.bookmarks,
+      nextCursor: result.nextCursor,
+      hasNextPage: result.hasNextPage
+    });
 
-//   } catch (err) {
-//     console.error('Error in handleRecommendedRoutes:', err);
-//     return res.status(400).json({
-//       isSuccess: false,
-//       code: "COMMON400",
-//       message: "잘못된 요청입니다.",
-//       result: null
-//     });
-//   }
-// };
+  } catch (err) {
+    console.error('Error in handleGetUserBookmarks:', err);
+    return res.status(400).json({
+      isSuccess: false,
+      code: "COMMON400",
+      message: "잘못된 요청입니다.",
+      result: null
+    });
+  }
+};
