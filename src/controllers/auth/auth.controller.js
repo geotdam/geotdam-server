@@ -1,5 +1,8 @@
-//src.controllers/auth/auth.controller.js
 import SocialLoginService from '../../services/socialLogin/socialLogin.service.js';
+import passport from 'passport';
+import jwt from 'jsonwebtoken';
+import { errors } from '../../utils/errors.js';
+import { success } from '../../utils/success.js';
 
 const service = new SocialLoginService();
 
@@ -14,56 +17,106 @@ export const kakaoLogin = async (req, res) => {
   }
 };
 
-export const kakaoLoginRedirect = (req, res) => {
-  const authorizeUrl = new URL('https://kauth.kakao.com/oauth/authorize');
-  authorizeUrl.searchParams.set('client_id', process.env.KAKAO_REST_API_KEY);
-  authorizeUrl.searchParams.set('redirect_uri', process.env.KAKAO_REDIRECT_URI);
-  authorizeUrl.searchParams.set('response_type', 'code');
-  // 첫 진입은 normal
-  authorizeUrl.searchParams.set('state', 'normal');
-  return res.redirect(authorizeUrl.toString());
+export const kakaoLoginRedirect = (req, res, next) => {
+  const isApi = req.query.response_type === 'json';
+  passport.authenticate('kakao')(req, res, next);
 };
 
-// 새로 추가: 브라우저 리디렉션 처리용
-export const kakaoCallback = async (req, res) => {
-  try {
-    const { code, state = 'normal' } = req.query;
-    const result = await service.kakaoLogin(code, state);
+export const kakaoCallback = (req, res, next) => {
+  const isApi = req.query.response_type === 'json';
+  
+  passport.authenticate('kakao', async (err, user) => {
+    try {
+      if (err) {
+        if (isApi) {
+          return res.status(500).json(errors.auth.KAKAO_LOGIN_ERROR);
+        }
+        const redirectUrl = `${process.env.KAKAO_FAILURE_REDIRECT_URI}?error=server_error`;
+        return res.redirect(redirectUrl);
+      }
+      
+      if (!user) {
+        if (isApi) {
+          return res.status(401).json(errors.auth.KAKAO_LOGIN_FAILED);
+        }
+        const redirectUrl = `${process.env.KAKAO_FAILURE_REDIRECT_URI}?error=login_failed`;
+        return res.redirect(redirectUrl);
+      }
 
-    // deactivated 상태라 재동의가 필요하면 카카오로 다시 리다이렉트
-    if (result.reconsentUrl) {
-      return res.redirect(result.reconsentUrl);
+      const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+      await service.saveSocialLogin({
+        userId: user.userId,
+        accessToken: token,
+        email: user.email,
+        platform: 'kakao'
+      });
+
+      if (isApi) {
+        return res.status(200).json(success.auth.LOGIN_SUCCESS({ token }));
+      }
+
+      const redirectUrl = `${process.env.KAKAO_SUCCESS_REDIRECT_URI}?token=${token}`;
+      res.redirect(redirectUrl);
+    } catch (error) {
+      if (isApi) {
+        return res.status(500).json(errors.auth.KAKAO_LOGIN_ERROR);
+      }
+      const redirectUrl = `${process.env.KAKAO_FAILURE_REDIRECT_URI}?error=server_error`;
+      res.redirect(redirectUrl);
     }
-
-    // 정상 로그인 완료: 프론트로 토큰 전달
-    const redirectBaseUrl = process.env.KAKAO_SUCCESS_REDIRECT_URI;
-    return res.redirect(`${redirectBaseUrl}?token=${result.token}`);
-  } catch (error) {
-    console.error('❌ GET 카카오 콜백 오류:', error.response?.data || error.message);
-    return res.status(500).json({ message: '카카오 로그인 실패' });
-  }
+  })(req, res, next);
 };
 
-export const googleLoginRedirect = (req, res) => {
-  const authorizeUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
-  authorizeUrl.searchParams.set('client_id', process.env.GOOGLE_CLIENT_ID);
-  authorizeUrl.searchParams.set('redirect_uri', process.env.GOOGLE_REDIRECT_URI);
-  authorizeUrl.searchParams.set('response_type', 'code');
-  authorizeUrl.searchParams.set('scope', 'openid email profile https://www.googleapis.com/auth/user.birthday.read https://www.googleapis.com/auth/user.gender.read');
-  authorizeUrl.searchParams.set('access_type', 'offline');
-  authorizeUrl.searchParams.set('prompt', 'consent');
-
-  return res.redirect(authorizeUrl.toString());
+export const googleLoginRedirect = (req, res, next) => {
+  const isApi = req.query.response_type === 'json';
+  passport.authenticate('google', {
+    scope: ['profile', 'email', 'https://www.googleapis.com/auth/user.birthday.read', 'https://www.googleapis.com/auth/user.gender.read']
+  })(req, res, next);
 };
 
-export const googleCallback = async (req, res) => {
-  try {
-    const { code } = req.query;
-    const result = await service.googleLogin(code);
-    const redirectBaseUrl = process.env.GOOGLE_SUCCESS_REDIRECT_URI;
-    return res.redirect(`${redirectBaseUrl}?token=${result.token}`);
-  } catch (error) {
-    console.error('❌ 구글 로그인 오류:', error.response?.data || error.message);
-    return res.status(500).json({ message: '구글 로그인 실패' });
-  }
+export const googleCallback = (req, res, next) => {
+  const isApi = req.query.response_type === 'json';
+
+  passport.authenticate('google', async (err, user) => {
+    try {
+      if (err) {
+        if (isApi) {
+          return res.status(500).json(errors.auth.GOOGLE_LOGIN_ERROR);
+        }
+        const redirectUrl = `${process.env.GOOGLE_FAILURE_REDIRECT_URI}?error=server_error`;
+        return res.redirect(redirectUrl);
+      }
+      
+      if (!user) {
+        if (isApi) {
+          return res.status(401).json(errors.auth.GOOGLE_LOGIN_FAILED);
+        }
+        const redirectUrl = `${process.env.GOOGLE_FAILURE_REDIRECT_URI}?error=login_failed`;
+        return res.redirect(redirectUrl);
+      }
+
+      const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+      await service.saveSocialLogin({
+        userId: user.userId,
+        accessToken: token,
+        email: user.email,
+        platform: 'google'
+      });
+
+      if (isApi) {
+        return res.status(200).json(success.auth.LOGIN_SUCCESS({ token }));
+      }
+
+      const redirectUrl = `${process.env.GOOGLE_SUCCESS_REDIRECT_URI}?token=${token}`;
+      res.redirect(redirectUrl);
+    } catch (error) {
+      if (isApi) {
+        return res.status(500).json(errors.auth.GOOGLE_LOGIN_ERROR);
+      }
+      const redirectUrl = `${process.env.GOOGLE_FAILURE_REDIRECT_URI}?error=server_error`;
+      res.redirect(redirectUrl);
+    }
+  })(req, res, next);
 };

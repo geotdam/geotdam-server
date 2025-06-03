@@ -8,6 +8,10 @@ export default class SocialLoginRepository {
     return await db.Users.findOne({ where: { email } });
   }
 
+  async findById(userId) {
+    return await db.Users.findOne({ where: { user_id: userId } });
+  }
+
   // async updateGoogleId(userId, googleId) {
   //   return await db.Users.update({ google_id: googleId }, { where: { userId } });
   // }

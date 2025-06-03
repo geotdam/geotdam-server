@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
+import passport from "passport";
+import session from "express-session";
 
 import cron from "node-cron";
 import db from "./models/index.js";
@@ -29,6 +31,16 @@ const port = process.env.PORT || 3000;
 // __dirname 대체 (ESM용)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Passport 설정
+import "./config/passport.js";
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-secret-key',
+  resave: false,
+  saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(cors());
 app.use(express.static("public"));
