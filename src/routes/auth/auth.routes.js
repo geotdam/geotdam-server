@@ -10,11 +10,11 @@ import authenticateJWT from "../../middlewares/authenticate.jwt.js";
 
 const router = express.Router();
 
-//router.post("/kakao", kakaoLogin);
-router.get("/login/kakao", kakaoLoginRedirect);
-router.get("/callback/kakao", kakaoCallback);
+// 소셜 로그인 라우트
 router.get("/login/google", googleLoginRedirect);
 router.get("/callback/google", googleCallback);
+router.get("/login/kakao", kakaoLoginRedirect);
+router.get("/callback/kakao", kakaoCallback);
 
 // 회원가입이랑 로그인은 인증 필요 없음
 // 회원가입

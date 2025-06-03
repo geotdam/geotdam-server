@@ -2,6 +2,7 @@ import passport from 'passport';
 import { Strategy as KakaoStrategy } from 'passport-kakao';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import SocialLoginRepository from '../repositories/socialLogin/socialLogin.repository.js';
+import { google } from 'googleapis';
 
 const repo = new SocialLoginRepository();
 
@@ -9,9 +10,9 @@ passport.serializeUser((user, done) => {
   done(null, user.userId);
 });
 
-passport.deserializeUser(async (id, done) => {
+passport.deserializeUser(async (userId, done) => {
   try {
-    const user = await repo.findById(id);
+    const user = await repo.findById(userId);
     done(null, user);
   } catch (error) {
     done(error, null);
@@ -38,7 +39,7 @@ passport.use(new KakaoStrategy({
       }
 
       const birth = birthyear && birthday
-        ? new Date(`${birthyear}-${birthday}`)
+        ? new Date(`${birthyear}-${birthday.substring(0, 2)}-${birthday.substring(2, 4)}`)
         : null;
 
       let user = await repo.findByEmail(email);
@@ -91,6 +92,29 @@ passport.use(new GoogleStrategy({
       const email = profile.emails[0].value;
       const name = profile.displayName;
       const nickname = profile.displayName;
+
+      // Google People API를 사용하여 추가 정보 가져오기
+      const oauth2Client = new google.auth.OAuth2();
+      oauth2Client.setCredentials({ access_token: accessToken });
+      
+      const people = google.people({ version: 'v1', auth: oauth2Client });
+      const { data } = await people.people.get({
+        resourceName: 'people/me',
+        personFields: 'birthdays,genders',
+      });
+
+      // 생일 정보 처리
+      let birth = null;
+      if (data.birthdays && data.birthdays[0] && data.birthdays[0].date) {
+        const { year, month, day } = data.birthdays[0].date;
+        birth = new Date(year, month - 1, day);
+      }
+
+      // 성별 정보 처리
+      let gender = null;
+      if (data.genders && data.genders[0]) {
+        gender = data.genders[0].value.toLowerCase();
+      }
       
       let user = await repo.findByEmail(email);
 
@@ -99,8 +123,8 @@ passport.use(new GoogleStrategy({
           email,
           nickname,
           name,
-          gender: null, // Google API에서 gender 정보 가져오기 위해서는 추가 People API 호출 필요
-          birth: null,  // Google API에서 birth 정보 가져오기 위해서는 추가 People API 호출 필요
+          gender,
+          birth,
           password: '',
           status: 'active'
         });

@@ -34,15 +34,26 @@ const __dirname = path.dirname(__filename);
 
 // Passport 설정
 import "./config/passport.js";
+
+// CORS 설정
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://geotdam.store'],
+  credentials: true
+}));
+
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your-secret-key',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  }
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(cors());
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -69,7 +80,8 @@ app.use(errorHandler);
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: ['http://localhost:5173', 'https://geotdam.store'],
+    credentials: true,
     methods: ["GET", "POST"],
   },
 });
