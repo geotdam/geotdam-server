@@ -74,3 +74,41 @@ export class UnauthorizedError extends CustomError {
 //     super(reason, "UNKNOWN_ERROR", 500, data);
 //   }
 // }
+
+export class AuthSignupFailedError extends InvalidInputError {
+  constructor(reason = "회원가입에 실패했습니다", data = null) {
+    super(reason, data);
+    this.errorCode = "AUTH_SIGNUP_FAILED";
+  }
+}
+
+export class AuthLoginFailedError extends InvalidInputError {
+  constructor(
+    reason = "이메일 또는 비밀번호가 올바르지 않습니다",
+    data = null
+  ) {
+    super(reason, data);
+    this.errorCode = "AUTH_LOGIN_FAILED";
+  }
+}
+
+export class AuthUserNotFoundError extends NotExistsError {
+  constructor(reason = "사용자를 찾을 수 없습니다", data = null) {
+    super(reason, data);
+    this.errorCode = "AUTH_USER_NOT_FOUND";
+  }
+}
+
+export class AuthUpdateFailedError extends InvalidInputError {
+  constructor(reason = "회원정보 수정에 실패했습니다", data = null) {
+    super(reason, data);
+    this.errorCode = "AUTH_UPDATE_FAILED";
+  }
+}
+
+export class AuthUnauthorizedError extends UnauthorizedError {
+  constructor(reason = "인증이 필요합니다", data = null) {
+    super(reason, data);
+    this.errorCode = "AUTH_UNAUTHORIZED";
+  }
+}

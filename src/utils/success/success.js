@@ -25,3 +25,30 @@ export class NoContentSuccess extends SuccessResponse {
   }
 }
 
+export class AuthSignupSuccess extends CreatedSuccess {
+  constructor(result = null) {
+    super(result, "회원가입이 완료되었습니다.");
+    this.code = "AUTH_SIGNUP_SUCCESS";
+  }
+}
+
+export class AuthLoginSuccess extends OkSuccess {
+  constructor(result = null) {
+    super(result, "로그인 성공");
+    this.code = "AUTH_LOGIN_SUCCESS";
+  }
+}
+
+export class AuthUserInfoSuccess extends OkSuccess {
+  constructor(result = null) {
+    super(result, "회원정보 조회 성공");
+    this.code = "AUTH_USERINFO_SUCCESS";
+  }
+}
+
+export class AuthUpdateSuccess extends OkSuccess {
+  constructor(result = null) {
+    super(result, "회원정보 수정 성공");
+    this.code = "AUTH_UPDATE_SUCCESS";
+  }
+}
