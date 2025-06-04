@@ -19,7 +19,7 @@ export const register = async ({
   if (exists) throw new Error("이미 가입된 이메일입니다.");
 
   const hashed = await bcrypt.hash(password, 10); // 비밀번호 암호화
-  console.log("Hashed Password:", hashed); // 해시값 확인
+  // console.log("Hashed Password:", hashed); // 해시값 확인
 
   const user = await userRepository.createUser({
     email,
@@ -32,17 +32,18 @@ export const register = async ({
     status: "active", // 일단 가입하는 사람 active로 초기화
   });
 
-  return {
-    user: new UserDto({
-      userId: user.userId,
-      email: user.email,
-      name: user.name,
-      nickname: user.nickname,
-      birth: user.birth,
-      gender: user.gender,
-      address: user.address,
-    }),
-  };
+  // return {
+  //   user: new UserDto({
+  //     userId: user.userId,
+  //     email: user.email,
+  //     name: user.name,
+  //     nickname: user.nickname,
+  //     birth: user.birth,
+  //     gender: user.gender,
+  //     address: user.address,
+  //   }),
+  // };
+  return new UserDto(user);
 };
 
 export const login = async ({ email, password }) => {
@@ -65,19 +66,22 @@ export const login = async ({ email, password }) => {
     userId: user.userId,
     jwtToken: token,
   });
-  console.log("Generated Token:", token); // 토큰 값 확인
 
+  // return {
+  //   token, // 토큰 반환
+  //   user: new UserDto({
+  //     userId: user.userId,
+  //     email: user.email,
+  //     name: user.name,
+  //     nickname: user.nickname,
+  //     birth: user.birth,
+  //     gender: user.gender,
+  //     address: user.address,
+  //   }),
+  // };
   return {
-    token, // 토큰 반환
-    user: new UserDto({
-      userId: user.userId,
-      email: user.email,
-      name: user.name,
-      nickname: user.nickname,
-      birth: user.birth,
-      gender: user.gender,
-      address: user.address,
-    }),
+    token,
+    user: new UserDto(user),
   };
 };
 
@@ -85,7 +89,8 @@ export const login = async ({ email, password }) => {
 export const getUserInfo = async ({ userId }) => {
   const user = await userRepository.findUserById({ userId });
   if (!user) throw new Error("활성화된 사용자를 찾을 수 없습니다.");
-  return user;
+  // return user;
+  return new UserDto(user);
 };
 
 // 회원 정보 수정
@@ -118,12 +123,13 @@ export const update = async ({
 
   const updatedUser = await userRepository.updateUser({ userId, updateData });
 
-  return {
-    userId: updatedUser.id,
-    name: updatedUser.name,
-    nickname: updatedUser.nickname,
-    birth: updatedUser.birth,
-    gender: updatedUser.gender,
-    address: updatedUser.address,
-  };
+  // return {
+  //   userId: updatedUser.id,
+  //   name: updatedUser.name,
+  //   nickname: updatedUser.nickname,
+  //   birth: updatedUser.birth,
+  //   gender: updatedUser.gender,
+  //   address: updatedUser.address,
+  // };
+  return new UserDto(updatedUser);
 };

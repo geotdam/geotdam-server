@@ -1,4 +1,8 @@
 import * as authService from "../../services/auth/auth.signup.service.js";
+import passport from "passport";
+import jwt from "jsonwebtoken";
+import { errors } from "../../utils/errors.js";
+import { success } from "../../utils/success.js";
 
 // 일반 회원가입
 export const register = async (req, res) => {
