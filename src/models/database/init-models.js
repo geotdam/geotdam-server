@@ -4,6 +4,7 @@ var _jwtToken = require("./jwtToken");
 var _placeImgs = require("./placeImgs");
 var _placeRoutes = require("./placeRoutes");
 var _places = require("./places");
+var _placeReviews = require("./placeReviews");
 var _reviews = require("./reviews");
 var _routeBookmarks = require("./routeBookmarks");
 var _routeImgs = require("./routeImgs");
@@ -18,6 +19,7 @@ function initModels(sequelize) {
   var jwtToken = _jwtToken(sequelize, DataTypes);
   var placeImgs = _placeImgs(sequelize, DataTypes);
   var placeRoutes = _placeRoutes(sequelize, DataTypes);
+  var placeReviews = _placeReviews(sequelize, DataTypes);
   var places = _places(sequelize, DataTypes);
   var reviews = _reviews(sequelize, DataTypes);
   var routeBookmarks = _routeBookmarks(sequelize, DataTypes);
@@ -56,22 +58,27 @@ function initModels(sequelize) {
   users.hasMany(socialLogins, { as: "socialLogins", foreignKey: "user_id"});
   userImgs.belongsTo(users, { as: "user", foreignKey: "user_id"});
   users.hasMany(userImgs, { as: "userImgs", foreignKey: "user_id"});
+  placeReviews.belongsTo(users, { as: "user", foreignKey: "user_id" });
+  users.hasMany(placeReviews, { as: "placeReviews", foreignKey: "user_id" });
+  placeReviews.belongsTo(places, { as: "place", foreignKey: "place_id" });
+  places.hasMany(placeReviews, { as: "placeReviews", foreignKey: "place_id" });
 
   return {
-    SequelizeMeta,
-    jwtToken,
-    placeImgs,
-    placeRoutes,
-    places,
-    reviews,
-    routeBookmarks,
-    routeImgs,
-    routeLikes,
-    routes,
-    socialLogins,
-    userImgs,
-    users,
-  };
+  SequelizeMeta,
+  jwtToken,
+  placeImgs,
+  placeRoutes,
+  places,
+  reviews,
+  routeBookmarks,
+  routeImgs,
+  routeLikes,
+  routes,
+  socialLogins,
+  userImgs,
+  users,
+  placeReviews, 
+};
 }
 module.exports = initModels;
 module.exports.initModels = initModels;

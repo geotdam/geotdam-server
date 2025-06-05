@@ -40,6 +40,7 @@ const modelFiles = [
   "routeLikes.js",
   "userImgs.js",
   "jwtToken.js",
+  "placeReviews.js"
 ];
 
 const db = {};
