@@ -37,7 +37,7 @@ import "./config/passport.js";
 
 // CORS 설정
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://geotdam.store'],
+  origin: "*",
   credentials: true
 }));
 
@@ -80,9 +80,9 @@ app.use(errorHandler);
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:5173', 'https://geotdam.store'],
+    origin: "*",
     credentials: true,
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST"]
   },
 });
 
