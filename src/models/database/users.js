@@ -79,6 +79,13 @@ export default (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     });
+
+    //사용자가 남긴 장소 리뷰 연관추가 
+    Users.hasMany(models.PlaceReviews, {
+      foreignKey: "userId",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
   };
   return Users;
 };
