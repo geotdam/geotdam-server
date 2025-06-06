@@ -36,10 +36,44 @@ const __dirname = path.dirname(__filename);
 import "./config/passport.js";
 
 // CORS 설정
+
+const allowedOrigins = [
+  "https://geotdam-frontend-tvqb.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "http://localhost:8080",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:8080"
+];
 app.use(cors({
-  origin: "*"
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
+// Preflight(OPTIONS) 요청도 CORS 허용
+app.options('*', cors({
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your-secret-key',
@@ -80,9 +114,13 @@ app.use(errorHandler);
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*"
-  },
+    origin: allowedOrigins,
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true
+  }
 });
+
 
 // 소켓 설정 등록
 locationSocket(io);
