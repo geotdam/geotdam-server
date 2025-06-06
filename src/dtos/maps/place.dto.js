@@ -26,7 +26,14 @@ export class PlaceResponseDto {
   }
 }
 
-
+//장소 별점 정보 DTO 
+export class PlaceRatingResponseDto {
+  constructor(place) {
+    const data = place.dataValues; // 직접 꺼냄
+    this.place_id = data.placeId;
+    this.place_name = data.name;
+  }
+}
 
 // 장소 등록용 DTO
 export class CreatePlaceDto {
