@@ -6,24 +6,23 @@ import axios from 'axios';
 
 //CCTV 데이터
 export const MyRouteMarkings = async (req, res, next) => {
-try {
-      const latitude = parseFloat(req.query.latitude);
-      const longitude = parseFloat(req.query.longitude);
+  try {
+    const latitude = parseFloat(req.query.latitude);
+    const longitude = parseFloat(req.query.longitude);
 
-      if (isNaN(latitude) || isNaN(longitude)) {
-        throw new Error("유효한 위도(latitude)와 경도(longitude)를 입력하세요.");
-      }
+    if (isNaN(latitude) || isNaN(longitude)) {
+      throw new InvalidInputError("유효한 위도(latitude)와 경도(longitude)를 입력하세요.");
+    }
 
-    const placeGu = await getGuFromCoordinates(latitude, longitude);
-    // CCTV마킹 정보 가져오기
-    const cctvResult = await getCctvMarkings(placeGu);
+    // CCTV마킹 정보 가져오기 (1km 반경 내)
+    const cctvResult = await getCctvMarkings(latitude, longitude, 1000);
 
     // 마킹이 하나도 없으면 204 응답
     if (cctvResult.length === 0) {
       return res.status(204).json(new NoContentSuccess());
     }
 
-    // 성공 응답: routeId 포함해서 리턴
+    // 성공 응답
     return res.status(200).json(
       new OkSuccess({
         markings: cctvResult
@@ -39,14 +38,12 @@ try {
 //가로등 데이터
 export const MyRouteStreetLight = async (req, res, next) => {
   try {
+    const latitude = parseFloat(req.query.latitude);
+    const longitude = parseFloat(req.query.longitude);
 
-      const latitude = parseFloat(req.query.latitude);
-      const longitude = parseFloat(req.query.longitude);
-
-      if (isNaN(latitude) || isNaN(longitude)) {
-        throw new Error("유효한 위도(latitude)와 경도(longitude)를 입력하세요.");
-      }
-
+    if (isNaN(latitude) || isNaN(longitude)) {
+      throw new InvalidInputError("유효한 위도(latitude)와 경도(longitude)를 입력하세요.");
+    }
 
     const lamps = await getNearbyStreetLamps(latitude, longitude, 3000); // 반경 3km
 

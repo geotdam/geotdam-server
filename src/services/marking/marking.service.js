@@ -1,12 +1,21 @@
 import axios from 'axios';
 import { parseStringPromise } from 'xml2js';
 
-export const getCctvMarkings = async (placeGu) => {
+export const getCctvMarkings = async (latitude, longitude, radius = 1000) => {
   try {
     const VWORLD_API_KEY = process.env.CCTV_KEY;
     if (!VWORLD_API_KEY) {
       return [];
     }
+
+    // Convert radius from meters to degrees (approximate)
+    const degreeRadius = radius / 111000; // 1 degree ≈ 111km at the equator
+
+    // Calculate bounding box coordinates
+    const minLng = longitude - degreeRadius;
+    const minLat = latitude - degreeRadius;
+    const maxLng = longitude + degreeRadius;
+    const maxLat = latitude + degreeRadius;
 
     // URL 파라미터 구성
     const queryParams = new URLSearchParams({
@@ -17,17 +26,9 @@ export const getCctvMarkings = async (placeGu) => {
       domain: process.env.VWORLD_DOMAIN || 'localhost:3000',
       format: 'json',
       size: '20',
-      page: '1'
+      page: '1',
+      geomFilter: `BOX(${minLng},${minLat},${maxLng},${maxLat})`
     });
-
-    // 구 코드로 검색하거나 서울 전체 영역으로 검색
-    if (placeGu) {
-      // 구 이름으로 검색할 때는 geomFilter 사용
-      queryParams.append('geomFilter', 'BOX(126.734086,37.413294,127.269311,37.715133)');
-    } else {
-      // 전체 검색시에는 서울시 동코드 범위로 검색 (11로 시작하는 코드가 서울시)
-      queryParams.append('attrFilter', 'emdCd:LIKE:11*');
-    }
 
     const url = `https://api.vworld.kr/req/data?${queryParams.toString()}`;
     
@@ -50,38 +51,44 @@ export const getCctvMarkings = async (placeGu) => {
       return [];
     }
 
-    // 구 이름으로 필터링
-    let filteredFeatures = features;
-    if (placeGu) {
-      const searchTerm = placeGu.endsWith('구') ? placeGu : placeGu + '구';
-      filteredFeatures = features.filter(feature => 
-        feature.properties.locate?.includes('서울특별시') && 
-        feature.properties.locate?.includes(searchTerm)
-      );
-    }
-
-    // 결과가 없는 경우 전체 결과 반환
-    if (filteredFeatures.length === 0) {
-      filteredFeatures = features;
-    }
-
     // 최대 20개까지만 사용
-    filteredFeatures = filteredFeatures.slice(0, 20);
+    const limitedFeatures = features.slice(0, 20);
 
-    // point와 id 형식으로 변환
-    const result = filteredFeatures.map(feature => ({
-      point: {
-        lat: feature.geometry.coordinates[1],
-        lng: feature.geometry.coordinates[0]
-      },
-      id: feature.id,
-      type: 'CCTV',
-      name: feature.properties.cctvname,
-      address: feature.properties.locate
-    }));
+    // 각 CCTV와 주어진 좌표 사이의 거리를 계산하고 정렬
+    const resultsWithDistance = limitedFeatures.map(feature => {
+      const cctvLat = feature.geometry.coordinates[1];
+      const cctvLng = feature.geometry.coordinates[0];
+      
+      // Calculate distance using Haversine formula
+      const R = 6371000; // Earth's radius in meters
+      const dLat = toRad(cctvLat - latitude);
+      const dLon = toRad(cctvLng - longitude);
+      const lat1 = toRad(latitude);
+      const lat2 = toRad(cctvLat);
 
-    console.log('변환된 결과:', result);
-    return result;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const distance = R * c;
+
+      return {
+        point: {
+          lat: cctvLat,
+          lng: cctvLng
+        },
+        id: feature.id,
+        type: 'CCTV',
+        name: feature.properties.cctvname,
+        address: feature.properties.locate,
+        distance: distance // Distance in meters
+      };
+    });
+
+    // Sort by distance
+    resultsWithDistance.sort((a, b) => a.distance - b.distance);
+
+    console.log('변환된 결과:', resultsWithDistance);
+    return resultsWithDistance;
 
   } catch (error) {
     console.error('getCctvMarkings 에러:', error.message);
@@ -89,6 +96,10 @@ export const getCctvMarkings = async (placeGu) => {
   }
 };
 
+// Helper function to convert degrees to radians
+function toRad(degrees) {
+  return degrees * Math.PI / 180;
+}
 
 //가로등 마킹 불러오기
 export const getStreetLampMarkings = async (latitude, longitude, radius = 3000) => {
