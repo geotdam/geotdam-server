@@ -7,7 +7,6 @@ import axios from 'axios';
 //CCTV 데이터
 export const MyRouteMarkings = async (req, res, next) => {
 try {
-
       const latitude = parseFloat(req.query.latitude);
       const longitude = parseFloat(req.query.longitude);
 
@@ -19,17 +18,15 @@ try {
     // CCTV마킹 정보 가져오기
     const cctvResult = await getCctvMarkings(placeGu);
 
-    const combinedMarkings = [...cctvResult];  //, ...lampResult
-
     // 마킹이 하나도 없으면 204 응답
-    if (combinedMarkings.length === 0) {
+    if (cctvResult.length === 0) {
       return res.status(204).json(new NoContentSuccess());
     }
 
     // 성공 응답: routeId 포함해서 리턴
     return res.status(200).json(
       new OkSuccess({
-        markings: combinedMarkings
+        markings: cctvResult
       })
     );
 
