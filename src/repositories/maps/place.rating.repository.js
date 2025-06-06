@@ -43,3 +43,4 @@ export const updateRating = async (userId, placeId, rating) => {
 export const findPlaceById = async (placeId) => {
   return await Places.findByPk(placeId);
 };
+

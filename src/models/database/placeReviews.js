@@ -20,7 +20,7 @@ export default (sequelize, DataTypes) => {
         field: "place_id",
       },
       rating: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
         allowNull: false,
         validate: {
           min: 1,
