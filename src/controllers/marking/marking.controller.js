@@ -1,6 +1,6 @@
 import { getCctvMarkings } from '../../services/marking/marking.service.js';
 import { InvalidInputError } from '../../utils/errors/errors.js';
-import { OkSuccess } from '../../utils/success/success.js';
+import { OkSuccess,NoContentSuccess } from '../../utils/success/success.js';
 import { getNearbyStreetLamps } from '../../services/marking/osm.service.js';
 import axios from 'axios';
 
