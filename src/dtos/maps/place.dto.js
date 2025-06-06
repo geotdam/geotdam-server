@@ -46,6 +46,29 @@ export class CreatePlaceDto {
   }
 }
 
+//장소 리뷰 응답 DTO 
+export class PlaceReviewResponseDto {
+  constructor(placeReview) {
+    const data = placeReview.dataValues;
+
+    this.review_id = data.reviewId;
+    this.user_id = data.userId;
+    this.place_id = data.placeId;
+    this.rating = data.rating;
+    this.content = data.content;
+    this.created_at = data.createdAt;
+    this.updated_at = data.updatedAt;
+
+    this.user = {
+      nickname: data.User?.nickname || '알 수 없음',
+      profile_image: data.User?.UserImg?.image_url || null,
+    };
+  }
+}
+
+
+
+
 // 장소 이미지 등록 DTO
 export class CreatePlaceImageDto {
   constructor({ place_id, place_img_url }) {
