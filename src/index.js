@@ -62,6 +62,7 @@ app.use("/api", markingRouter);
 app.use("/api", likeRouter);
 app.use("/api", bookmarkRouter);
 
+
 // 실시간 위치테스트용 기본 라우트
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
