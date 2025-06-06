@@ -1,12 +1,27 @@
-import express from 'express';
-import { handleRouteBookmarkToggle, handleGetUserBookmarks } from '../../controllers/bookmark/bookmark.controller.js';
-import { authenticateJWT } from '../../middlewares/authenticate.jwt.js';
+import express from "express";
+import {
+  handleRouteBookmarkToggle,
+  handleGetUserBookmarks,
+} from "../../controllers/bookmark/bookmark.controller.js";
+import * as bookmarkController from "../../controllers/bookmark/place.bookmark.controller.js";
+import { authenticateJWT } from "../../middlewares/authenticate.jwt.js";
 
 const router = express.Router();
 
 // 루트 북마크 토글 API
-router.post('/mypages/bookmarks/:routeId', authenticateJWT, handleRouteBookmarkToggle);
+router.post(
+  "/mypages/bookmarks/:routeId",
+  authenticateJWT,
+  handleRouteBookmarkToggle
+);
 // 커서 기반 북마크 목록 조회
-router.get('/mypages/bookmarks', authenticateJWT, handleGetUserBookmarks);
+router.get("/mypages/bookmarks", authenticateJWT, handleGetUserBookmarks);
+
+// 장소 북마크 API
+router.post(
+  "/places/:placeId/bookmark",
+  authenticateJWT,
+  bookmarkController.placeBookmark
+);
 
 export default router;
