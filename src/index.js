@@ -37,9 +37,9 @@ import "./config/passport.js";
 
 // CORS 설정
 app.use(cors({
-  origin: "*",
-  credentials: true
+  origin: "*"
 }));
+
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your-secret-key',
@@ -80,9 +80,7 @@ app.use(errorHandler);
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
-    credentials: true,
-    methods: ["GET", "POST"]
+    origin: "*"
   },
 });
 
