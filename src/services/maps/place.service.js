@@ -62,18 +62,26 @@ export const searchPlacesFromTmap = async (query) => {
 
   const pois = res.data?.searchPoiInfo?.pois?.poi || [];
 
+   // ✅ id 기준 중복 제거
+  const uniquePoisMap = new Map();
+  pois.forEach((poi) => {
+    if (!uniquePoisMap.has(poi.id)) {
+      uniquePoisMap.set(poi.id, poi);
+    }
+  });
+  const uniquePois = Array.from(uniquePoisMap.values());
+
   // 각 장소에 대해 상세 정보 병렬 조회
   const detailedPlaces = await Promise.all(
-    pois.map((poi) => getPlaceDetailFromTmap(poi.id))
+    uniquePois.map((poi) => getPlaceDetailFromTmap(poi.id))
   );
 
   // DTO로 변환
   return detailedPlaces.map((place) => {
   const dto = new PlaceResponseDto(place);
   return dto;
-});
+ });
 };
-
 
 //좌표->구변환도 포함 
 export const getGuFromCoordinates = async (lat, lng) => {
