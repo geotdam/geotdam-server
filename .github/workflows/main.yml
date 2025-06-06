@@ -53,7 +53,15 @@ jobs:
 
             echo \"🔓 로그 파일 권한 설정\"
             sudo touch app.log && sudo chmod 777 app.log
-
+            
+            echo \"🔍 포트 $PORT 점유 중인 프로세스 확인 및 종료 시도...\"
+            PID=\$(sudo lsof -t -i:$PORT)
+            if [ ! -z \"\$PID\" ]; then
+              echo \"⚠️ 포트 $PORT 를 사용 중인 프로세스 \$PID 종료 중...\"
+              sudo kill -9 \$PID || echo \"⚠️ 프로세스 종료 실패\"
+            else
+              echo \"✅ 포트 $PORT 는 현재 사용 중이지 않음\"
+            fi
             echo \"🚀 앱 시작 중...\"
             nohup npm start > app.log 2>&1 &
 
