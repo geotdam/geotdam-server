@@ -45,7 +45,7 @@ export const MyRouteStreetLight = async (req, res, next) => {
       throw new InvalidInputError("유효한 위도(latitude)와 경도(longitude)를 입력하세요.");
     }
 
-    const lamps = await getNearbyStreetLamps(latitude, longitude, 3000); // 반경 3km
+    const lamps = await getNearbyStreetLamps(latitude, longitude, 10000); // 반경 3km
 
     return res.status(200).json({
       isSuccess: true,
