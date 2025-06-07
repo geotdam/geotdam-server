@@ -33,8 +33,8 @@ export default (sequelize, DataTypes) => {
   );
 
   PlaceBookmarks.associate = (models) => {
-    PlaceBookmarks.belongsTo(models.Users, { foreignKey: "userId" });
-    PlaceBookmarks.belongsTo(models.Places, { foreignKey: "placeId" });
+    PlaceBookmarks.belongsTo(models.Users, { foreignKey: "user_id" });
+    PlaceBookmarks.belongsTo(models.Places, { foreignKey: "place_id" });
   };
   return PlaceBookmarks;
 };

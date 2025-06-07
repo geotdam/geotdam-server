@@ -1,13 +1,21 @@
-// import * as bookmarkRepository from "../../repositories/bookmark/bookmark.repository.js";
+import { PlaceBookmarkDto } from "../../dtos/bookmark/place.bookmark.dto.js";
+import * as bookmarkRepository from "../../repositories/bookmark/place.bookmark.repository.js";
 
-// export const bookmark = async({
-//   placeId,
-//   // userId는 토큰으로 받아올거고
-// }) => {
-//     // 이미 북마크 된 거 또 누르면 북마크 취소
-//     const deleteBookmark = await bookmarkRepository.
-//     // 북마크 생성하기
-//     const createBookmark = await bookmarkRepository.createBookmark({
-//         placeId,
-//     })
-// };
+export const bookmark = async ({ placeBookmarkId, userId, placeId }) => {
+  const existingBookmark = await bookmarkRepository.findBookmark({
+    userId,
+    placeId,
+  });
+
+  if (existingBookmark) {
+    throw new Error("이미 북마크한 장소입니다");
+  }
+
+  const newBookmark = await bookmarkRepository.createBookmark({
+    placeBookmarkId,
+    userId,
+    placeId,
+  });
+
+  return new PlaceBookmarkDto(newBookmark);
+};
