@@ -102,7 +102,7 @@ function toRad(degrees) {
 }
 
 //가로등 마킹 불러오기
-export const getStreetLampMarkings = async (latitude, longitude, radius = 3000) => {
+export const getStreetLampMarkings = async (latitude, longitude, radius = 10000) => {
   const query = `[out:json];node["amenity"="bench"](around:${radius},${latitude},${longitude});out;`;
   const url = 'https://overpass-api.de/api/interpreter';
 
