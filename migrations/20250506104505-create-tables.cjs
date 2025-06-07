@@ -272,16 +272,23 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("placeRoutes");
-    await queryInterface.dropTable("placeImgs");
-    await queryInterface.dropTable("places");
+    // 1. 외래키 체크 일시적 비활성화 (MySQL 전용)
+    await queryInterface.sequelize.query("SET FOREIGN_KEY_CHECKS = 0;");
+
+    // 2. 테이블 삭제 순서 조정 (자식 → 부모)
     await queryInterface.dropTable("reviews");
     await queryInterface.dropTable("routeBookmarks");
     await queryInterface.dropTable("routeLikes");
     await queryInterface.dropTable("routeImgs");
+    await queryInterface.dropTable("placeRoutes");
+    await queryInterface.dropTable("placeImgs");
+    await queryInterface.dropTable("places");
     await queryInterface.dropTable("routes");
     await queryInterface.dropTable("userImgs");
     await queryInterface.dropTable("socialLogins");
     await queryInterface.dropTable("users");
+
+    // 3. 외래키 체크 재활성화
+    await queryInterface.sequelize.query("SET FOREIGN_KEY_CHECKS = 1;");
   },
 };

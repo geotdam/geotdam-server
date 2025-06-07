@@ -1,21 +1,21 @@
-//루트 북마크
+// 장소 북마크
 export default (sequelize, DataTypes) => {
-  const RouteBookmarks = sequelize.define(
-    "RouteBookmarks",
+  const PlaceBookmarks = sequelize.define(
+    "PlaceBookmarks",
     {
-      bookmarkId: {
+      placebookmarkId: {
         type: DataTypes.BIGINT,
         primaryKey: true,
         autoIncrement: true,
-        field: "bookmark_id",
+        field: "place_bookmark_id",
       },
       userId: {
         type: DataTypes.BIGINT,
         field: "user_id",
       },
-      routeId: {
+      placeId: {
         type: DataTypes.BIGINT,
-        field: "route_id",
+        field: "place_id",
       },
       createdAt: {
         type: DataTypes.DATE,
@@ -27,14 +27,14 @@ export default (sequelize, DataTypes) => {
       },
     },
     {
-      tableName: "routeBookmarks",
+      tableName: "placeBookmarks",
       timestamps: false,
     }
   );
 
-  RouteBookmarks.associate = (models) => {
-    RouteBookmarks.belongsTo(models.Users, { foreignKey: "userId" });
-    RouteBookmarks.belongsTo(models.Routes, { foreignKey: "routeId" });
+  PlaceBookmarks.associate = (models) => {
+    PlaceBookmarks.belongsTo(models.Users, { foreignKey: "user_id" });
+    PlaceBookmarks.belongsTo(models.Places, { foreignKey: "place_id" });
   };
-  return RouteBookmarks;
+  return PlaceBookmarks;
 };
