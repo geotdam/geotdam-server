@@ -26,7 +26,14 @@ export class PlaceResponseDto {
   }
 }
 
-
+//장소 별점 정보 DTO 
+export class PlaceRatingResponseDto {
+  constructor(place) {
+    const data = place.dataValues; // 직접 꺼냄
+    this.place_id = data.placeId;
+    this.place_name = data.name;
+  }
+}
 
 // 장소 등록용 DTO
 export class CreatePlaceDto {
@@ -38,6 +45,29 @@ export class CreatePlaceDto {
     this.sequence = sequence;
   }
 }
+
+//장소 리뷰 응답 DTO 
+export class PlaceReviewResponseDto {
+  constructor(placeReview) {
+    const data = placeReview.dataValues;
+
+    this.review_id = data.reviewId;
+    this.user_id = data.userId;
+    this.place_id = data.placeId;
+    this.rating = data.rating;
+    this.content = data.content;
+    this.created_at = data.createdAt;
+    this.updated_at = data.updatedAt;
+
+    this.user = {
+      nickname: data.User?.nickname || '알 수 없음',
+      profile_image: data.User?.UserImg?.image_url || null,
+    };
+  }
+}
+
+
+
 
 // 장소 이미지 등록 DTO
 export class CreatePlaceImageDto {
