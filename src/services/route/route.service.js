@@ -9,12 +9,13 @@ import {
 } from '../../utils/errors/errors.js';
 
 // 지원하는 모드
-const modes = ['WALK', 'CAR', 'TRANSIT'];
+//const modes = ['WALK', 'CAR', 'TRANSIT'];
+const modes = ['WALK', 'CAR'];
 
 const modeToUrl = {
   WALK: 'https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json',
   CAR: 'https://apis.openapi.sk.com/tmap/routes?version=1&format=json',
-  TRANSIT: 'https://apis.openapi.sk.com/transit/routes',
+ // TRANSIT: 'https://apis.openapi.sk.com/transit/routes',
 };
 
 const getFirstPlaceCoord = async (placeName) => {
