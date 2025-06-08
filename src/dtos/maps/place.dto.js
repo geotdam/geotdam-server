@@ -61,11 +61,10 @@ export class PlaceReviewResponseDto {
 
     this.user = {
       nickname: data.User?.nickname || '알 수 없음',
-      profile_image: data.User?.UserImg?.image_url || null,
+      profile_image: data.User?.UserImg?.imageUrl || null,
     };
   }
 }
-
 
 
 

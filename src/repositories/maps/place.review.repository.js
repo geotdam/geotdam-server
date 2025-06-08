@@ -8,7 +8,7 @@ export const createReview = async ({ placeId, userId, content, rating }) => {
   return await PlaceReviews.create({
     place_id: placeId,
     user_id: userId,
-    content,
+    content, //리뷰 내용 
     rating,
   });
 };
@@ -23,8 +23,8 @@ export const findReviewsWithPagination = async (placeId, offset, limit) => {
     attributes: ['nickname'],
     include: [
       {
-        model: db.UserImgs, // ✅ alias 생략!
-        attributes: ['image_url'],
+        model: db.UserImgs, 
+        attributes: ['imageUrl'],
       },
     ],
   },
@@ -35,7 +35,7 @@ export const findReviewsWithPagination = async (placeId, offset, limit) => {
   });
 };
 
-// 별점 + 리뷰 동시 업데이트
+// 별점 리뷰 동시 업데이트
 export const updateRatingAndReview = async (userId, placeId, rating, content) => {
   return await PlaceReviews.update(
     {
@@ -49,7 +49,7 @@ export const updateRatingAndReview = async (userId, placeId, rating, content) =>
   );
 };
 
-// 별점 리뷰 동시 생성
+// 별점 리뷰 동시 생성하기 
 export const createRatingAndReview = async (userId, placeId, rating, content) => {
   return await PlaceReviews.create({
     userId,
@@ -63,5 +63,28 @@ export const createRatingAndReview = async (userId, placeId, rating, content) =>
 export const findReviewByUserAndPlace = async (userId, placeId) => {
   return await PlaceReviews.findOne({
     where: { user_id: userId, place_id: placeId }
+  });
+};
+
+
+// user_id + place_id 기준으로
+export const findReviewWithUserByUserAndPlace = async (userId, placeId) => {
+  return await PlaceReviews.findOne({
+    where: {
+      user_id: userId,
+      place_id: placeId
+    },
+    include: [
+      {
+        model: Users,
+        attributes: ['nickname'],
+        include: [
+          {
+            model: db.UserImgs,
+            attributes: ['imageUrl']
+          }
+        ]
+      }
+    ]
   });
 };

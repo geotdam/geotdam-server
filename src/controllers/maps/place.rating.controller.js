@@ -1,6 +1,6 @@
 //컨트롤러
 import { createOrUpdateRatingService } from '../../services/maps/place.rating.service.js'
-
+import { OkSuccess } from '../../utils/success/success.js';
 
 export const createOrUpdateRating = async (req, res,next) => { //별점 등록 
   try {
@@ -9,13 +9,7 @@ export const createOrUpdateRating = async (req, res,next) => { //별점 등록
     const userId = req.user.userId;
 
     const placeDto = await createOrUpdateRatingService({ userId, placeId, rating });
-
-     res.status(200).json({
-      isSuccess: true,
-      code: 'COMMON200',
-      message: '별점이 등록되었습니다.',
-      result: placeDto, //등록된 장소 정보 포함시킴
-    });
+    return res.status(200).json(new OkSuccess(placeDto));
   } catch (error) {
     next(error); 
   }
