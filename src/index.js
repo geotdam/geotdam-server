@@ -22,6 +22,7 @@ import locationRouter from "./sockets/socket.routes.js";
 import markingRouter from "./routes/marking/marking.routes.js";
 import likeRouter from "./routes/likes/like.routes.js";
 import bookmarkRouter from "./routes/bookmark/bookmark.routes.js";
+import imageUploadRouter from "./routes/upload/image.route.js";
 
 dotenv.config();
 
@@ -63,6 +64,8 @@ app.use("/api", locationRouter);
 app.use("/api", markingRouter);
 app.use("/api", likeRouter);
 app.use("/api", bookmarkRouter);
+app.use("/api", imageUploadRouter); // 이미지 업로드 
+
 
 
 // 실시간 위치테스트용 기본 라우트
