@@ -1,18 +1,20 @@
 import axios from 'axios';
 import { searchPlacesFromTmap } from '../maps/place.service.js';
 import { RouteResponseDto } from '../../dtos/route/response/routeResponse.dto.js';
-import { TMAP_API_KEY } from '../../../config/tmap.config.js';
+import { TMAP_API_KEY, TMAP_TRANSIT_KEY } from '../../../config/tmap.config.js';
 import {
   NotExistsError,
   InvalidInputError,
   SampleError,
 } from '../../utils/errors/errors.js';
 
-const modes = ['WALK', 'BIKE', 'CAR'];
+// 지원하는 모드
+const modes = ['WALK', 'CAR', 'TRANSIT'];
+
 const modeToUrl = {
   WALK: 'https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json',
-  //BIKE: 'https://apis.openapi.sk.com/tmap/routes/bicycle?version=1&format=json',
   CAR: 'https://apis.openapi.sk.com/tmap/routes?version=1&format=json',
+  TRANSIT: 'https://apis.openapi.sk.com/transit/routes',
 };
 
 const getFirstPlaceCoord = async (placeName) => {
@@ -28,36 +30,48 @@ const getFirstPlaceCoord = async (placeName) => {
 };
 
 const getRouteByMode = async (mode, origin, destination, waypoints, nameSummary) => {
-  const body = {
-    startX: origin.lng,
-    startY: origin.lat,
-    endX: destination.lng,
-    endY: destination.lat,
-    reqCoordType: 'WGS84GEO',
-    resCoordType: 'WGS84GEO',
-    startName: origin.name,
-    endName: destination.name,
+  const url = modeToUrl[mode];
+  let headers = {
+    'Content-Type': 'application/json',
   };
 
-  if (waypoints.length > 0) {
-    body.passList = waypoints.map(wp => `${wp.lng},${wp.lat}`).join('_');
+  let body = {};
+
+  if (mode === 'TRANSIT') {
+    headers.appKey = TMAP_TRANSIT_KEY;
+    body = {
+      startX: origin.lng.toString(),
+      startY: origin.lat.toString(),
+      endX: destination.lng.toString(),
+      endY: destination.lat.toString(),
+      lang: 0,
+      format: 'json',
+      count: 1,
+    };
+  } else {
+    headers.appKey = TMAP_API_KEY;
+    body = {
+      startX: origin.lng,
+      startY: origin.lat,
+      endX: destination.lng,
+      endY: destination.lat,
+      reqCoordType: 'WGS84GEO',
+      resCoordType: 'WGS84GEO',
+      startName: origin.name,
+      endName: destination.name,
+    };
+    if (waypoints.length > 0) {
+      body.passList = waypoints.map(wp => `${wp.lng},${wp.lat}`).join('_');
+    }
   }
 
-  const url = modeToUrl[mode];
-
   try {
-    const response = await axios.post(url, body, {
-      headers: {
-        appKey: TMAP_API_KEY,
-        'Content-Type': 'application/json',
-      },
-    });
-
+    const response = await axios.post(url, body, { headers });
     console.log(`[✅ ${mode}] Tmap 응답 수신 성공`);
     return new RouteResponseDto(response.data, nameSummary, mode);
   } catch (error) {
     console.warn(`[⚠️ ${mode}] 경로 생성 실패`, error.response?.data || error.message);
-    return null; // 실패한 mode는 null로 처리
+    return null; // 실패한 경우 무시
   }
 };
 
