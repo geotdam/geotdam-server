@@ -19,9 +19,9 @@ import { fileURLToPath } from "url";
 import routeRouter from "./routes/route/route.routes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import locationRouter from "./sockets/socket.routes.js";
-import markingRouter from "./routes/marking/marking.routes.js"
-import likeRouter from "./routes/likes/like.routes.js"
-import bookmarkRouter from "./routes/bookmark/bookmark.routes.js"
+import markingRouter from "./routes/marking/marking.routes.js";
+import likeRouter from "./routes/likes/like.routes.js";
+import bookmarkRouter from "./routes/bookmark/bookmark.routes.js";
 
 dotenv.config();
 
@@ -35,15 +35,17 @@ const __dirname = path.dirname(__filename);
 // Passport 설정
 import "./config/passport.js";
 
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
-  }
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    },
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -74,7 +76,6 @@ app.use(errorHandler);
 // HTTP + Socket 서버 초기화
 const server = createServer(app);
 const io = new Server(server, {});
-
 
 // 소켓 설정 등록
 locationSocket(io);

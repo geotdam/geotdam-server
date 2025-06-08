@@ -22,7 +22,7 @@ const sequelize = new Sequelize(
     dialect: environmentConfig.dialect,
     port: environmentConfig.port,
     timezone: environmentConfig.timezone,
-    logging: false, //로그 출력 안되게 바꿈 (너무 길어서서) 
+    logging: false, //로그 출력 안되게 바꿈 (너무 길어서서)
   }
 );
 
@@ -40,7 +40,8 @@ const modelFiles = [
   "routeLikes.js",
   "userImgs.js",
   "jwtToken.js",
-  "placeReviews.js"
+  "placeReviews.js",
+  "placeBookmarks.js",
 ];
 
 const db = {};

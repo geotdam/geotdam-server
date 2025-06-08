@@ -1,53 +1,108 @@
 import axios from 'axios';
 import { parseStringPromise } from 'xml2js';
 
-export const getCctvMarkings = async (placeGu) => {
+export const getCctvMarkings = async (latitude, longitude, radius = 1000) => {
   try {
-    const CCTVAPI_KEY = process.env.CCTV_KEY; // 환경변수에서 인증키 가져오기
-    if (!CCTVAPI_KEY) throw new Error('CCTV API Key가 설정되어 있지 않습니다.');
-    
-    const serviceName = 'safeOpenCCTV';
-    const type = 'xml';
-    const startIndex = 1;
-    const endIndex = 100; // 한번에 최대 1000건까지 가능, 예시로 100건 조회
-    // 요청 URL
-    const url = `http://openapi.seoul.go.kr:8088/${CCTVAPI_KEY}/${type}/${serviceName}/${startIndex}/${endIndex}/${placeGu}`;
-
-    // GET 요청
-    const response = await axios.get(url);
-
-    // XML -> JS 객체 변환
-    const result = await parseStringPromise(response.data);
-
-    // 결과 코드 확인
-    const code = result.safeOpenCCTV.RESULT[0].CODE[0];
-    if (code !== 'INFO-000') {
-      throw new Error(`API 요청 실패: ${result.safeOpenCCTV.RESULT[0].MESSAGE[0]}`);
+    const VWORLD_API_KEY = process.env.CCTV_KEY;
+    if (!VWORLD_API_KEY) {
+      return [];
     }
 
-    // CCTV 위치 배열 추출
-    const rows = result.safeOpenCCTV.row || [];
+    // Convert radius from meters to degrees (approximate)
+    const degreeRadius = radius / 111000; // 1 degree ≈ 111km at the equator
 
-    // 마킹 배열 만들기
-    const markings = rows.map((item, index) => ({
-      id: index + 1, // 1부터 시작하는 고유 번호 부여
-      markingType: 'CCTV',
-      lat: parseFloat(item.WGSXPT[0]),
-      lng: parseFloat(item.WGSYPT[0]),
-      address: item.ADDR[0],
-      area: item.SVCAREAID[0],
-    }));
+    // Calculate bounding box coordinates
+    const minLng = longitude - degreeRadius;
+    const minLat = latitude - degreeRadius;
+    const maxLng = longitude + degreeRadius;
+    const maxLat = latitude + degreeRadius;
 
-    return markings;
+    // URL 파라미터 구성
+    const queryParams = new URLSearchParams({
+      service: 'data',
+      request: 'GetFeature',
+      data: 'LT_P_UTISCCTV',
+      key: VWORLD_API_KEY,
+      domain: process.env.VWORLD_DOMAIN || 'localhost:3000',
+      format: 'json',
+      size: '20',
+      page: '1',
+      geomFilter: `BOX(${minLng},${minLat},${maxLng},${maxLat})`
+    });
+
+    const url = `https://api.vworld.kr/req/data?${queryParams.toString()}`;
+    
+    console.log('API 요청 URL:', url);
+
+    const response = await axios.get(url);
+    
+    console.log('API 응답:', JSON.stringify(response.data, null, 2));
+
+    // 응답 상태 처리
+    if (!response.data?.response || response.data.response.status === 'ERROR') {
+      console.log('API 에러:', response.data?.response?.error);
+      return [];
+    }
+
+    // 결과가 없는 경우
+    const features = response.data.response?.result?.featureCollection?.features;
+    if (!features || features.length === 0) {
+      console.log('검색 결과가 없습니다.');
+      return [];
+    }
+
+    // 최대 20개까지만 사용
+    const limitedFeatures = features.slice(0, 20);
+
+    // 각 CCTV와 주어진 좌표 사이의 거리를 계산하고 정렬
+    const resultsWithDistance = limitedFeatures.map(feature => {
+      const cctvLat = feature.geometry.coordinates[1];
+      const cctvLng = feature.geometry.coordinates[0];
+      
+      // Calculate distance using Haversine formula
+      const R = 6371000; // Earth's radius in meters
+      const dLat = toRad(cctvLat - latitude);
+      const dLon = toRad(cctvLng - longitude);
+      const lat1 = toRad(latitude);
+      const lat2 = toRad(cctvLat);
+
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const distance = R * c;
+
+      return {
+        point: {
+          lat: cctvLat,
+          lng: cctvLng
+        },
+        id: feature.id,
+        type: 'CCTV',
+        name: feature.properties.cctvname,
+        address: feature.properties.locate,
+        distance: distance // Distance in meters
+      };
+    });
+
+    // Sort by distance
+    resultsWithDistance.sort((a, b) => a.distance - b.distance);
+
+    console.log('변환된 결과:', resultsWithDistance);
+    return resultsWithDistance;
+
   } catch (error) {
     console.error('getCctvMarkings 에러:', error.message);
     return [];
   }
 };
 
+// Helper function to convert degrees to radians
+function toRad(degrees) {
+  return degrees * Math.PI / 180;
+}
 
 //가로등 마킹 불러오기
-export const getStreetLampMarkings = async (latitude, longitude, radius = 3000) => {
+export const getStreetLampMarkings = async (latitude, longitude, radius = 10000) => {
   const query = `[out:json];node["amenity"="bench"](around:${radius},${latitude},${longitude});out;`;
   const url = 'https://overpass-api.de/api/interpreter';
 
