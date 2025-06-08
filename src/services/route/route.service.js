@@ -1,4 +1,3 @@
-// src/services/route/route.service.js
 import axios from 'axios';
 import { searchPlacesFromTmap } from '../maps/place.service.js';
 import { RouteResponseDto } from '../../dtos/route/response/routeResponse.dto.js';
@@ -9,6 +8,12 @@ import {
   SampleError,
 } from '../../utils/errors/errors.js';
 
+const modes = ['WALK', 'BIKE', 'CAR'];
+const modeToUrl = {
+  WALK: 'https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json',
+  //BIKE: 'https://apis.openapi.sk.com/tmap/routes/bicycle?version=1&format=json',
+  CAR: 'https://apis.openapi.sk.com/tmap/routes?version=1&format=json',
+};
 
 const getFirstPlaceCoord = async (placeName) => {
   const places = await searchPlacesFromTmap(placeName);
@@ -16,38 +21,13 @@ const getFirstPlaceCoord = async (placeName) => {
     throw new NotExistsError(`장소명을 찾을 수 없습니다: ${placeName}`);
   }
   return {
+    name: placeName,
     lat: places[0].lat,
     lng: places[0].lng,
   };
-};//좌표값 찾는 함수 
+};
 
-export const getWalkingRouteByPlaceNames = async (originName, destinationName, waypointNames = []) => {
-  try{
-  console.log('[경로 검색 요청]');
-  console.log('originName:', originName);
-  console.log('destinationName:', destinationName);
-  console.log('waypointNames:', waypointNames);
-  
-  
-  const origin = await getFirstPlaceCoord(originName);
-  const destination = await getFirstPlaceCoord(destinationName);
-  const waypoints = await Promise.all((waypointNames || []).map(getFirstPlaceCoord));
-
-  console.log('origin:', origin);
-  console.log('destination:', destination);
-  console.log('waypoints:', waypoints);
-
-  if (origin.lat === destination.lat && origin.lng === destination.lng) {
-      throw new InvalidInputError('출발지와 목적지가 동일할 수 없습니다.');
-  }
-
-  let passList = waypoints
-    .map((wp) => `${wp.lng},${wp.lat}`)
-    .join('_')
-    .replace(/\s+/g, ''); // 공백 제거
-
-  console.log('🛰️ passList:', JSON.stringify(passList));
-
+const getRouteByMode = async (mode, origin, destination, waypoints, nameSummary) => {
   const body = {
     startX: origin.lng,
     startY: origin.lat,
@@ -55,34 +35,58 @@ export const getWalkingRouteByPlaceNames = async (originName, destinationName, w
     endY: destination.lat,
     reqCoordType: 'WGS84GEO',
     resCoordType: 'WGS84GEO',
-    startName: originName,
-    endName: destinationName,
+    startName: origin.name,
+    endName: destination.name,
   };
 
-  if (passList.length > 0) {
-    body.passList = passList;
+  if (waypoints.length > 0) {
+    body.passList = waypoints.map(wp => `${wp.lng},${wp.lat}`).join('_');
   }
 
-    console.log('Tmap 요청 body:', JSON.stringify(body, null, 2))
+  const url = modeToUrl[mode];
 
-  const response = await axios.post(
-    'https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json',
-    body,
-    {
+  try {
+    const response = await axios.post(url, body, {
       headers: {
         appKey: TMAP_API_KEY,
         'Content-Type': 'application/json',
       },
-    }
-  );
+    });
 
-  const nameSummary = [originName, ...waypointNames, destinationName].join(' → ');
-  return new RouteResponseDto(response.data, nameSummary);
+    console.log(`[✅ ${mode}] Tmap 응답 수신 성공`);
+    return new RouteResponseDto(response.data, nameSummary, mode);
+  } catch (error) {
+    console.warn(`[⚠️ ${mode}] 경로 생성 실패`, error.response?.data || error.message);
+    return null; // 실패한 mode는 null로 처리
+  }
+};
 
-}catch (error) {
-    if (error.response?.status === 400) {
-      throw new InvalidInputError('Tmap에서 경로를 생성할 수 없습니다. 경유지를 확인해주세요.', error.response?.data);
+export const getMultiModalRoutes = async (originName, destinationName, waypointNames = []) => {
+  try {
+    const origin = await getFirstPlaceCoord(originName);
+    const destination = await getFirstPlaceCoord(destinationName);
+    const waypoints = await Promise.all((waypointNames || []).map(getFirstPlaceCoord));
+
+    if (origin.lat === destination.lat && origin.lng === destination.lng) {
+      throw new InvalidInputError('출발지와 목적지가 동일할 수 없습니다.');
     }
-    throw new SampleError('Tmap 요청 중 서버에러가 발생했습니다.', error.message);
+
+    const nameSummary = [originName, ...waypointNames, destinationName].join(' → ');
+
+    const routePromises = modes.map(mode =>
+      getRouteByMode(mode, origin, destination, waypoints, nameSummary)
+    );
+
+    const allRoutes = (await Promise.all(routePromises)).filter(route => route !== null);
+
+    if (allRoutes.length === 0) {
+      throw new SampleError('Tmap에서 모든 경로를 생성할 수 없습니다.');
+    }
+
+    return {
+      routes: allRoutes,
+    };
+  } catch (error) {
+    throw error;
   }
 };
