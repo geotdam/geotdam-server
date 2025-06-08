@@ -1,36 +1,79 @@
 // src/dtos/route/response/routeResponse.dto.js
 
-//도보경로 검색 리스폰스 dto 
+//경로 검색 리스폰스 dto 
 export class RouteResponseDto {
-  constructor(data, nameSummary) {
-    const features = data.features || [];
+  constructor(data, nameSummary, mode) {
+    this.mode = mode;
+    this.summary = nameSummary;
+    this.distance = 0;
+    this.duration = 0;
+    this.polyline = [];
+    this.start_location = {};
+    this.end_location = {};
 
-    const summary = features.find(f =>
-      f.properties?.totalDistance !== undefined &&
-      f.properties?.totalTime !== undefined
-    )?.properties || { totalDistance: 0, totalTime: 0 };
+    // ✅ 대중교통 응답 처리
+    if (mode === 'TRANSIT' && data.metaData?.plan?.itineraries?.length > 0) {
+      const itinerary = data.metaData.plan.itineraries[0];
+      this.distance = itinerary.totalDistance;
+      this.duration = itinerary.totalTime;
 
-    const polyline = features
-      .filter((f) => f.geometry?.type === 'LineString')
-      .flatMap((f) =>
-        f.geometry.coordinates.map(([lng, lat]) => ({ lat, lng }))
-      );
+      const polyline = [];
 
-    const start = polyline[0] ?? {};
-    const end = polyline.at(-1) ?? {};
+      itinerary.legs.forEach((leg) => {
+        if (leg.steps) {
+          leg.steps.forEach((step) => {
+            if (step.linestring) {
+              const coords = step.linestring
+                .split(' ')
+                .map(pair => {
+                  const [lng, lat] = pair.split(',').map(Number);
+                  return { lat, lng };
+                });
+              polyline.push(...coords);
+            }
+          });
+        }
+      });
 
-    this.route = {
-      summary: nameSummary,
-      distance: summary.totalDistance,
-      duration: summary.totalTime,
-      start_location: start,
-      end_location: end,
-      polyline,
-    };
+      this.polyline = polyline;
+      const start = polyline[0] ?? {};
+      const end = polyline.at(-1) ?? {};
+      this.start_location = { latitude: start.lat, longitude: start.lng };
+      this.end_location = { latitude: end.lat, longitude: end.lng };
 
-    this.markings = [];
+    // ✅ 도보 및 자동차 응답 처리
+    } else if (data.features?.length > 0) {
+      const features = data.features;
+
+      const summary = features.find(f =>
+        f.properties?.totalDistance !== undefined &&
+        f.properties?.totalTime !== undefined
+      )?.properties || { totalDistance: 0, totalTime: 0 };
+
+      this.distance = summary.totalDistance;
+      this.duration = summary.totalTime;
+
+      const rawPolyline = features
+        .filter((f) => f.geometry?.type === 'LineString')
+        .flatMap((f) =>
+          f.geometry.coordinates
+            ?.filter(coord => Array.isArray(coord) && coord.length === 2)
+            .map(([lng, lat]) => ({ lat, lng }))
+        ) || [];
+
+      const polyline = rawPolyline.filter((_, idx) => idx % 5 === 0);
+
+      this.polyline = polyline;
+      const start = polyline[0] ?? {};
+      const end = polyline.at(-1) ?? {};
+      this.start_location = { latitude: start.lat, longitude: start.lng };
+      this.end_location = { latitude: end.lat, longitude: end.lng };
+    }
   }
 }
+
+
+
 
 
 //내가 만든 경로의 마킹 불러오기 DTO 
