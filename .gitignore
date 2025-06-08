@@ -4,3 +4,6 @@ node_modules/
 # dotenv environment variable files
 .env
 .env.*
+
+# 이미지 서버 관련
+gcp-key.json
