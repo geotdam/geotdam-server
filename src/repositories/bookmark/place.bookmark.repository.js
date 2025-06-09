@@ -16,3 +16,29 @@ export const findBookmark = async ({ userId, placeId }) => {
     },
   });
 };
+
+export const findPlaceBookmarksByCursor = async ({ userId, cursor, limit }) => {
+  const where = {
+    user_id: userId,
+  };
+
+  if (cursor) {
+    where.place_bookmark_id = {
+      [models.Sequelize.Op.lt]: cursor, // 커서보다 작은 ID (내림차순 기준)
+    };
+  }
+
+  const bookmarks = await models.PlaceBookmarks.findAll({
+    where,
+    include: [
+      {
+        model: models.Places,
+        as: "Place",
+      },
+    ],
+    order: [["place_bookmark_id", "DESC"]],
+    limit,
+  });
+
+  return bookmarks;
+};

@@ -59,12 +59,12 @@ app.use("/api/auth", authRoutes); // auth 라우터 등록
 
 app.use("/api/road", roadRoutes); // road 관련 라우터 등록
 
+app.use("/api", bookmarkRouter); // 북마크 라우터 등록 
 app.use("/api", placeRouter); // 장소검색 라우터 등록
 app.use("/api", routeRouter); //경로검색 라우터 등록
 app.use("/api", locationRouter);
 app.use("/api", markingRouter);
 app.use("/api", likeRouter);
-app.use("/api", bookmarkRouter);
 app.use("/api", imageUploadRouter); // 이미지 업로드 
 
 

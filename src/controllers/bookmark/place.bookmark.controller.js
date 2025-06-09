@@ -28,3 +28,20 @@ export const placeBookmark = async (req, res) => {
     res.status(400).json({ message: e.message });
   }
 };
+
+//장소 북마크 조회
+export const getPlaceBookmarks = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    if (!userId) return res.status(401).json({ message: "인증이 필요합니다." });
+    const { cursor, limit = 10 } = req.query;
+    const bookmarks = await bookmarkService.getPlaceBookmarks({
+      userId,
+      cursor,
+      limit: parseInt(limit),
+    });
+    res.status(200).json(bookmarks);
+  } catch (e) {
+    res.status(400).json({ message: e.message });
+  }
+};
