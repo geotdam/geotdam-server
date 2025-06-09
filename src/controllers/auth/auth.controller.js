@@ -49,11 +49,22 @@ export const kakaoCallback = (req, res, next) => {
         userId: user.userId,
         accessToken: token,
         email: user.email,
+        nickname: user.nickname,
         platform: 'kakao'
       });
 
       if (isApi) {
-        return res.status(200).json(success.auth.LOGIN_SUCCESS({ token }));
+        return res.status(200).json(
+          success.auth.LOGIN_SUCCESS({
+            tokentoken,
+            user: {
+              userId: user.userId,
+              email: user.email,
+              nickname: user.nickname,
+              // 필요한 다른 정보들
+            },
+          })
+        );
       }
 
       const redirectUrl = `${process.env.KAKAO_SUCCESS_REDIRECT_URI}?token=${token}`;
@@ -102,6 +113,7 @@ export const googleCallback = (req, res, next) => {
         userId: user.userId,
         accessToken: token,
         email: user.email,
+        nickname: user.nickname,
         platform: 'google'
       });
 
@@ -119,4 +131,27 @@ export const googleCallback = (req, res, next) => {
       res.redirect(redirectUrl);
     }
   })(req, res, next);
+};
+
+export const getCurrentUser = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ message: 'No token' });
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await service.getCurrentUser(decoded.userId);
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // 필요한 필드만 추출
+    const { user_id, email, name, nickname, gender, birth, status } = user;
+    return res.status(200).json({
+      user: { user_id, email, name, nickname, gender, birth, status }
+    });
+  } catch (error) {
+    console.error('유저 정보 가져오기 실패:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
 };

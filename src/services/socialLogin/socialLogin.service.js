@@ -14,4 +14,8 @@ export default class SocialLoginService {
   async deactivateInactiveUsers() {
     return await this.repo.deactivateInactiveUsers();
   }
+
+  async getCurrentUser(userId) {
+  return await this.repo.findByUserId(userId);
+  }
 }
