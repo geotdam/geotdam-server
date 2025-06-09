@@ -19,31 +19,30 @@ const getPlaceDetailFromTmap = async (poiId) => {
   const poi = res.data.poiDetailInfo;
   const thumbnail_url = await getPlaceImageUrl(poi.name);//이미지 처리 구글 api로 
   const { rating, participant } = await getGooglePlaceRating(poi.name); // 별점이랑 별점 사용자 추가 
-  
+
   return {
-  name: poi.name,
-  place_id: poi.id,
-  location: `${poi.frontLat},${poi.frontLon}`,
-  address: poi.fullAddress ?? "",
+    name: poi.name,
+    place_id: poi.id,
+    location: `${poi.frontLat},${poi.frontLon}`,
+    address: poi.fullAddress ?? "",
 
-  tel: poi.tel ?? null,
-  additionalInfo: poi.additionalInfo?.trim() || null, //빈문자열 체크해주기!  
-  point:rating, //구글 api에서 갖고옴
-  participant: participant, //구글 api에서 갖고옴
-  
-  jibunAddress: poi.newAddress ?? null,
-  roadAddress: poi.roadName ?? null,
-  bizCategory: poi.bizCatName ?? null,
-  menuInfo: poi.menuInfo ?? null,
-  franchise: poi.franchiseYn === 'Y',
-  facilities: {
-    parking: poi.parkFlag === 'Y',
-    chargingStation: poi.evChargers ?? [],
-    toilet: poi.toiletFlag === 'Y',
-  },
-  thumbnail_url: thumbnail_url,
-};
+    tel: poi.tel ?? null,
+    additionalInfo: poi.additionalInfo?.trim() || null, //빈문자열 체크해주기!  
+    point: rating, //구글 api에서 갖고옴
+    participant: participant, //구글 api에서 갖고옴
 
+    jibunAddress: poi.newAddress ?? null,
+    roadAddress: poi.roadName ?? null,
+    bizCategory: poi.bizCatName ?? null,
+    menuInfo: poi.menuInfo ?? null,
+    franchise: poi.franchiseYn === 'Y',
+    facilities: {
+      parking: poi.parkFlag === 'Y',
+      chargingStation: poi.evChargers ?? [],
+      toilet: poi.toiletFlag === 'Y',
+    },
+    thumbnail_url: thumbnail_url,
+  }; 
 };
 
 //장소 검색 후 상세정보 포함 반환
@@ -62,7 +61,7 @@ export const searchPlacesFromTmap = async (query) => {
 
   const pois = res.data?.searchPoiInfo?.pois?.poi || [];
 
-   // ✅ id 기준 중복 제거
+  // ✅ id 기준 중복 제거
   const uniquePoisMap = new Map();
   pois.forEach((poi) => {
     if (!uniquePoisMap.has(poi.id)) {
@@ -78,9 +77,9 @@ export const searchPlacesFromTmap = async (query) => {
 
   // DTO로 변환
   return detailedPlaces.map((place) => {
-  const dto = new PlaceResponseDto(place);
-  return dto;
- });
+    const dto = new PlaceResponseDto(place);
+    return dto;
+  });
 };
 
 //좌표->구변환도 포함 
