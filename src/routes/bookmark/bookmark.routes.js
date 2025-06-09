@@ -25,4 +25,12 @@ router.post(
 // 커서 기반 북마크 목록 조회
 router.get("/mypages/bookmarks", authenticateJWT, handleGetUserBookmarks);
 
+
+// 장소 북마크 조회 
+// router.get(
+//   "/places/bookmark",
+//   authenticateJWT,
+//   bookmarkController.getPlaceBookmarks
+// );
+
 export default router;
