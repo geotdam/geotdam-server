@@ -19,3 +19,26 @@ export const bookmark = async ({ placeBookmarkId, userId, placeId }) => {
 
   return new PlaceBookmarkDto(newBookmark);
 };
+
+export const getPlaceBookmarks = async ({ userId, cursor, limit }) => {
+  const bookmarks = await bookmarkRepository.findPlaceBookmarksByCursor({
+    userId,
+    cursor,
+    limit,
+  });
+
+  const results = bookmarks.map(bookmark => ({
+    ...new PlaceBookmarkDto(bookmark),
+    place: {
+      name: bookmark.place?.name || null,
+      category: bookmark.place?.category || null,
+    },
+  }));
+
+  const nextCursor = results.length > 0 ? results[results.length - 1].placeBookmarkId : null;
+
+  return {
+    bookmarks: results,
+    nextCursor,
+  };
+};

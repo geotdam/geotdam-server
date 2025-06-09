@@ -15,6 +15,13 @@ router.post(
   bookmarkController.placeBookmark
 );
 
+// 장소 북마크 커서 기반 페이징 조회
+router.get(
+  "/places/bookmark",
+  authenticateJWT,
+  bookmarkController.getPlaceBookmarks
+);
+
 // 루트 북마크 토글 API
 router.post(
   "/mypages/bookmarks/:routeId",
