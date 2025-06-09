@@ -10,6 +10,7 @@ import authRoutes from "./routes/auth/auth.routes.js";
 import SocialLoginService from "./services/socialLogin/socialLogin.service.js";
 import placeRouter from "./routes/maps/place.routes.js";
 import roadRoutes from "./routes/road/road.routes.js";
+import { initGoogleRatingsIfNeeded } from "./init/initGoogleRatings.js"; // 상단에 import 추가
 
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -86,8 +87,11 @@ locationSocket(io);
 // 데이터베이스 동기화 후 서버 실행
 db.sequelize
   .sync({ force: false })
-  .then(() => {
+  .then(async() => {
     console.log("✅ Database synced successfully.");
+
+    // ✅ 구글 더미 별점 초기화
+    await initGoogleRatingsIfNeeded();
 
     const socialLoginService = new SocialLoginService();
     cron.schedule("0 3 * * *", async () => {
