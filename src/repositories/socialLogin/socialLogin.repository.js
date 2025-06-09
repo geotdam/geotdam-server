@@ -62,6 +62,10 @@ export default class SocialLoginRepository {
     });
   }
 
+  async findByUserId(userId) {
+  return await db.Users.findOne({ where: { userId: userId } });
+}
+
   // ✅ 추가: 1년 이상 로그인 안 한 유저 비활성화 처리
   async deactivateInactiveUsers() {
     try {
