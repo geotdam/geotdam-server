@@ -3,8 +3,8 @@ import { OkSuccess } from '../../utils/success/success.js';
 
 export const searchPlacesDetail = async (req, res, next) => {
   try {
-    const { poiId } = req.params;
-    const result = await getPlaceDetailById(poiId); 
+    const { placeId } = req.params;
+    const result = await getPlaceDetailById(placeId); 
     return res.status(200).json(new OkSuccess(result));
   } catch (err) {
     console.error('장소 상세 오류:', err);
