@@ -88,3 +88,35 @@ export const findReviewWithUserByUserAndPlace = async (userId, placeId) => {
     ]
   });
 };
+
+
+// 사용자 리뷰 목록 조회 (관리자 계정 user_id = 1 제외)
+export const findUserReviewsByPlace = async (placeId) => {
+  return await PlaceReviews.findAll({
+    where: {
+      place_id: placeId,
+      user_id: { [db.Sequelize.Op.ne]: 1 },
+    },
+  });
+};
+
+
+// corrected_rating 업데이트
+export const updateCorrectedRatingInPlace = async (placeId, correctedRating) => {
+  console.log("correctedRating:",correctedRating);
+  const [affected] = await Places.update(
+    { correctedRating: correctedRating },
+    { where: { place_id: placeId } }
+  );
+  return affected;
+};
+
+// 외부 별점 정보 가져오기
+export const getExternalRatingInfo = async (placeId) => {
+  const place = await Places.findByPk(placeId);
+  return {
+  external_rating: place.externalRating,
+  external_rating_participant: place.externalRatingParticipant,
+};
+
+};
