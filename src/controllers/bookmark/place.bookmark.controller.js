@@ -7,45 +7,62 @@ import { Sequelize } from "sequelize";
 export const placeBookmark = async (req, res) => {
   try {
     const userId = req.user.userId;
-    console.log("userId:", userId);
     if (!userId) return res.status(401).json({ message: "인증이 필요합니다." });
 
     const { tmapPlaceId } = req.params;
-    console.log(tmapPlaceId);
 
-    // 1. Tmap ID로 조회 시도
     let place = await models.Places.findOne({
       where: { tmap_place_id: tmapPlaceId },
     });
 
-    // 2. 없으면 Tmap API에서 데이터 조회
     if (!place) {
       const tmapData = await getTmapPlaceInfo(tmapPlaceId);
 
-      // 3. 조회한 데이터로 findOrCreate 실행
-      [place] = await models.Places.findOrCreate({
-        where: { tmap_place_id: tmapPlaceId },
+      const lat = parseFloat(tmapData.frontLat);
+      const lon = parseFloat(tmapData.frontLon);
+
+      console.log("lat:", lat, "lon:", lon);
+
+      if (isNaN(lat) || isNaN(lon)) {
+        throw new Error(
+          `유효하지 않은 좌표값: lat=${tmapData.frontLat}, lon=${tmapData.frontLon}`
+        );
+      }
+
+      const [createdPlace, created] = await models.Places.findOrCreate({
+        where: { tmapPlaceId: tmapPlaceId },
         defaults: {
-          tmap_place_id: tmapPlaceId,
+          tmapPlaceId: tmapPlaceId,
           name: tmapData.name,
           address: tmapData.address,
+          phone: tmapData.phone,
+          externalRating: null,
           location: Sequelize.fn(
             "ST_GeomFromText",
-            `POINT(${tmapData.frontLon} ${tmapData.frontLat})`
+            // `POINT(${lon} ${lat})`
+            `POINT(${lat} ${lon})`,
+            4326
           ),
-          phone: tmapData.phone,
-          external_rating: tmapData.score,
         },
       });
-    }
-    console.log("Tmap API 응답:", response.data);
-    console.log(created ? "새 장소 생성됨" : "기존 장소 찾음");
 
-    // 찾거나 생성된 place의 place_id로 북마크 생성
+      if (!createdPlace?.placeId) {
+        throw new Error("장소 ID 생성 실패");
+      }
+
+      place = createdPlace; // 반드시 대입 연산자 사용!
+      console.log(created ? "새 장소 생성됨" : "기존 장소 찾음");
+      console.log("저장된 tmap_place_id:", place.tmapPlaceId);
+    }
+
+    console.log("전달할 placeId:", place.placeId);
+
     const bookmark = await bookmarkService.bookmark({
       userId,
-      placeId: place.place_id, // 내부 place_id 사용
+      placeId: place.placeId,
     });
+
+    console.log("생성된 장소 ID:", place.placeId); // 숫자 확인
 
     res.status(201).json(bookmark);
   } catch (e) {

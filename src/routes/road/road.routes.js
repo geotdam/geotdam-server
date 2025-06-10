@@ -29,7 +29,7 @@ router.get("/users/:userId", getUserRoutes);
 router.get("/", getAllRoutes);
 
 // 좋아요 기준 추천 루트 조회
-router.get('/recommends', authenticateJWT, handleRecommendedRoutes);
+router.get('/recommends', handleRecommendedRoutes);
 
 // 루트 상세 조회
 router.get("/:routeId", authenticateJWT, getRoadDetail);
