@@ -147,8 +147,6 @@ export const getCurrentUser = async (req, res) => {
     const user = await service.getCurrentUser(decoded.userId);
 
     if (!user) return res.status(404).json({ message: 'User not found' });
-     console.log('🔍 user.toJSON():', user.toJSON());
-    // 필요한 필드만 추출
     const { user_id, email, name, nickname, gender, birth, status, UserImg } = user;
     return res.status(200).json({
       user: { 

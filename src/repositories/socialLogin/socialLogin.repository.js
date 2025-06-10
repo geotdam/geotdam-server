@@ -11,14 +11,6 @@ export default class SocialLoginRepository {
   async findById(userId) {
     return await db.Users.findOne({ where: { user_id: userId } });
   }
-
-  // async updateGoogleId(userId, googleId) {
-  //   return await db.Users.update({ google_id: googleId }, { where: { userId } });
-  // }
-
-  // async updateKakaoId(userId, kakaoId) {
-  //   return await db.Users.update({ kakao_id: kakaoId }, { where: { userId } });
-  // }
   
   async createUser({ email, nickname, name, gender, birth, status, password }) {
   return await db.Users.create({
