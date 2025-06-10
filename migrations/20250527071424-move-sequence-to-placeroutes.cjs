@@ -1,23 +1,24 @@
 "use strict";
 
 module.exports = {
-    async up(queryInterface, Sequelize) {
-    // 컬럼 존재 여부 확인 후 삭제
-    const table = await queryInterface.describeTable('places');
-    if (table.sequence) {
-        await queryInterface.removeColumn('places', 'sequence');
+  async up(queryInterface, Sequelize) {
+    // places 테이블에 sequence 컬럼이 있는지 확인하고 제거
+    const placesTable = await queryInterface.describeTable('places');
+    if (placesTable.sequence) {
+      await queryInterface.removeColumn('places', 'sequence');
     }
-    await queryInterface.addColumn('placeroutes', 'sequence', {
-        type: Sequelize.INTEGER,
-        allowNull: true,
+    // 정확한 테이블명 'placeRoutes'로 수정
+    await queryInterface.addColumn('placeRoutes', 'sequence', {
+      type: Sequelize.INTEGER,
+      allowNull: true,
     });
-    },
+  },
 
-    async down(queryInterface, Sequelize) {
-        await queryInterface.addColumn("places", "sequence", {
-            type: Sequelize.INTEGER,
-            allowNull: true,
-        });
-        await queryInterface.removeColumn("placeroutes", "sequence");
-    }
-}
+  async down(queryInterface, Sequelize) {
+    await queryInterface.addColumn('places', 'sequence', {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+    });
+    await queryInterface.removeColumn('placeRoutes', 'sequence');
+  }
+};
