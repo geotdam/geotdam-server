@@ -1,7 +1,7 @@
 import { PlaceBookmarkDto } from "../../dtos/bookmark/place.bookmark.dto.js";
 import * as bookmarkRepository from "../../repositories/bookmark/place.bookmark.repository.js";
 
-export const bookmark = async ({ placeBookmarkId, userId, placeId }) => {
+export const bookmark = async ({ userId, placeId }) => {
   const existingBookmark = await bookmarkRepository.findBookmark({
     userId,
     placeId,
@@ -12,7 +12,6 @@ export const bookmark = async ({ placeBookmarkId, userId, placeId }) => {
   }
 
   const newBookmark = await bookmarkRepository.createBookmark({
-    placeBookmarkId,
     userId,
     placeId,
   });
