@@ -62,8 +62,40 @@ export default class SocialLoginRepository {
     });
   }
 
+    async saveOrUpdateUserImage(userId, imageUrl) {
+    try {
+      const existing = await db.UserImgs.findOne({ where: { userId } });
+
+      if (existing) {
+        console.log("🔄 기존 이미지 존재 - 업데이트");
+        await db.UserImgs.update(
+          { imageUrl },
+          { where: { userId } }
+        );
+      } else {
+        console.log("🆕 이미지 없음 - 생성");
+        await db.UserImgs.create({
+          userId,
+          imageUrl
+        });
+      }
+    } catch (error) {
+      console.error("🛑 이미지 저장 중 에러 발생:", error);
+      throw error;
+    }
+  }
+
   async findByUserId(userId) {
-  return await db.Users.findOne({ where: { userId: userId } });
+  return await db.Users.findOne({
+    where: { userId },
+    include: [
+      {
+        model: db.UserImgs,
+        attributes: ['imageUrl'],
+        as: 'UserImg'
+      },
+    ],
+  });
 }
 
   // ✅ 추가: 1년 이상 로그인 안 한 유저 비활성화 처리

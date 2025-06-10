@@ -44,13 +44,14 @@ export const kakaoCallback = (req, res, next) => {
       }
 
       const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '24h' });
-
+      //const userImg = await db.UserImgs.findOne({ where: { userId: user.userId }, });
       await service.saveSocialLogin({
         userId: user.userId,
         accessToken: token,
         email: user.email,
         nickname: user.nickname,
-        platform: 'kakao'
+        platform: 'kakao',
+        profileImageUrl: user.profileImageUrl || null
       });
 
       if (isApi) {
@@ -61,6 +62,7 @@ export const kakaoCallback = (req, res, next) => {
               userId: user.userId,
               email: user.email,
               nickname: user.nickname,
+              imageUrl: userImg?.imageUrl || null,
               // 필요한 다른 정보들
             },
           })
@@ -114,7 +116,8 @@ export const googleCallback = (req, res, next) => {
         accessToken: token,
         email: user.email,
         nickname: user.nickname,
-        platform: 'google'
+        platform: 'google',
+        profileImageUrl: user.profileImageUrl || null
       });
 
       if (isApi) {
@@ -144,11 +147,20 @@ export const getCurrentUser = async (req, res) => {
     const user = await service.getCurrentUser(decoded.userId);
 
     if (!user) return res.status(404).json({ message: 'User not found' });
-
+     console.log('🔍 user.toJSON():', user.toJSON());
     // 필요한 필드만 추출
-    const { user_id, email, name, nickname, gender, birth, status } = user;
+    const { user_id, email, name, nickname, gender, birth, status, UserImg } = user;
     return res.status(200).json({
-      user: { user_id, email, name, nickname, gender, birth, status }
+      user: { 
+        user_id,
+        email,
+        name,
+        nickname,
+        gender,
+        birth,
+        status,
+        imageUrl: UserImg?.imageUrl || null,
+      },
     });
   } catch (error) {
     console.error('유저 정보 가져오기 실패:', error);

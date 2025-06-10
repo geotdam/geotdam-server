@@ -16,7 +16,7 @@ export default (sequelize, DataTypes) => {
       field: 'image_url'
     }
   }, {
-    tableName: 'userImgs',
+    tableName: 'userimgs',
     timestamps: false
   });
 
