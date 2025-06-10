@@ -23,10 +23,11 @@ export const createOrUpdateReview = async ({ placeId, userId, content, rating })
   }
 
   // 사용자 리뷰 작성 후 보정 별점 업데이트
-  await updateCorrectedRating(placeId);
+  const correctedRating = await updateCorrectedRating(placeId);
+  //console.log("확인용:",correctedRating);
 
   const reviewWithUser = await findReviewWithUserByUserAndPlace(userId, placeId);
-  return new PlaceReviewResponseDto(reviewWithUser);
+  return new PlaceReviewResponseDto(reviewWithUser, correctedRating);
 };
 
 // 장소 리뷰 페이징 조회
@@ -64,4 +65,5 @@ export const updateCorrectedRating = async (placeId) => {
   console.log(`- 유저 리뷰 총합: ${userSum} (${userCount}명)`);
   console.log(`- 최종 corrected_rating: ${roundedCorrected}`);
   await updateCorrectedRatingInPlace(placeId, roundedCorrected);
+  return roundedCorrected; 
 };

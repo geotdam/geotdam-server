@@ -48,7 +48,7 @@ export class CreatePlaceDto {
 
 //장소 리뷰 응답 DTO 
 export class PlaceReviewResponseDto {
-  constructor(placeReview) {
+  constructor(placeReview, correctedRating) {
     const data = placeReview.dataValues;
 
     this.review_id = data.reviewId;
@@ -58,7 +58,7 @@ export class PlaceReviewResponseDto {
     this.content = data.content;
     this.created_at = data.createdAt;
     this.updated_at = data.updatedAt;
-
+    this.corrected_rating = correctedRating
     this.user = {
       nickname: data.User?.nickname || '알 수 없음',
       profile_image: data.User?.UserImg?.imageUrl || null,
