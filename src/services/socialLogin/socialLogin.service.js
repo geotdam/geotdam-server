@@ -15,7 +15,6 @@ export default class SocialLoginService {
 
     // 2. 프로필 이미지 저장 추가
     if (dto.profileImageUrl) {
-      console.log("📸 이미지 저장 시도:", dto.profileImageUrl);
       await this.repo.saveOrUpdateUserImage(dto.userId, dto.profileImageUrl);
     }
 

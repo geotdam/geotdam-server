@@ -67,13 +67,11 @@ export default class SocialLoginRepository {
       const existing = await db.UserImgs.findOne({ where: { userId } });
 
       if (existing) {
-        console.log("🔄 기존 이미지 존재 - 업데이트");
         await db.UserImgs.update(
           { imageUrl },
           { where: { userId } }
         );
       } else {
-        console.log("🆕 이미지 없음 - 생성");
         await db.UserImgs.create({
           userId,
           imageUrl
