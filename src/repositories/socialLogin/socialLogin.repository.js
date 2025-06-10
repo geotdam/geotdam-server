@@ -11,14 +11,6 @@ export default class SocialLoginRepository {
   async findById(userId) {
     return await db.Users.findOne({ where: { user_id: userId } });
   }
-
-  // async updateGoogleId(userId, googleId) {
-  //   return await db.Users.update({ google_id: googleId }, { where: { userId } });
-  // }
-
-  // async updateKakaoId(userId, kakaoId) {
-  //   return await db.Users.update({ kakao_id: kakaoId }, { where: { userId } });
-  // }
   
   async createUser({ email, nickname, name, gender, birth, status, password }) {
   return await db.Users.create({
@@ -62,8 +54,38 @@ export default class SocialLoginRepository {
     });
   }
 
+    async saveOrUpdateUserImage(userId, imageUrl) {
+    try {
+      const existing = await db.UserImgs.findOne({ where: { userId } });
+
+      if (existing) {
+        await db.UserImgs.update(
+          { imageUrl },
+          { where: { userId } }
+        );
+      } else {
+        await db.UserImgs.create({
+          userId,
+          imageUrl
+        });
+      }
+    } catch (error) {
+      console.error("🛑 이미지 저장 중 에러 발생:", error);
+      throw error;
+    }
+  }
+
   async findByUserId(userId) {
-  return await db.Users.findOne({ where: { userId: userId } });
+  return await db.Users.findOne({
+    where: { userId },
+    include: [
+      {
+        model: db.UserImgs,
+        attributes: ['imageUrl'],
+        as: 'UserImg'
+      },
+    ],
+  });
 }
 
   // ✅ 추가: 1년 이상 로그인 안 한 유저 비활성화 처리
