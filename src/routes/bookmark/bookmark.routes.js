@@ -10,7 +10,7 @@ const router = express.Router();
 
 // 장소 북마크 API
 router.post(
-  "/places/:placeId/bookmark",
+  "/places/:tmapPlaceId/bookmark",
   authenticateJWT,
   bookmarkController.placeBookmark
 );
