@@ -16,7 +16,7 @@ router.get("/login/google", googleLoginRedirect);
 router.get("/callback/google", googleCallback);
 router.get("/login/kakao", kakaoLoginRedirect);
 router.get("/callback/kakao", kakaoCallback);
-router.get('/social', getCurrentUser);
+router.get('/social', authenticateJWT, getCurrentUser);
 
 // 회원가입이랑 로그인은 인증 필요 없음
 // 회원가입

@@ -58,7 +58,7 @@ export const login = async ({ email, password }) => {
   const token = jwt.sign(
     { userId: user.userId, email: user.email },
     JWT_SECRET,
-    { expiresIn: "1h" } // 1시간마다 재생성해야됩니당
+    { expiresIn: "24h" } // 1시간마다 재생성해야됩니당
   );
 
   // jwt 토큰 db에 저장
