@@ -33,6 +33,7 @@ passport.use(new KakaoStrategy({
       const gender = profile._json?.kakao_account?.gender;
       const birthyear = profile._json?.kakao_account?.birthyear;
       const birthday = profile._json?.kakao_account?.birthday;
+      const imageUrl = profile._json?.properties?.profile_image;
       
       if (!email) {
         return done(new Error('이메일 정보를 가져올 수 없습니다.'), null);
@@ -73,7 +74,12 @@ passport.use(new KakaoStrategy({
         }
       }
 
-      return done(null, user);
+      return done(null, {
+        userId: user.userId,
+        email: user.email,
+        nickname: user.nickname,
+        profileImageUrl: imageUrl,
+      });
     } catch (error) {
       return done(error, null);
     }
@@ -92,6 +98,7 @@ passport.use(new GoogleStrategy({
       const email = profile.emails[0].value;
       const name = profile.displayName;
       const nickname = profile.displayName;
+      const imageUrl = profile.photos?.[0]?.value;
 
       // Google People API를 사용하여 추가 정보 가져오기
       const oauth2Client = new google.auth.OAuth2();
@@ -135,7 +142,12 @@ passport.use(new GoogleStrategy({
         await repo.updateLastLogin(user.userId);
       }
 
-      return done(null, user);
+      return done(null, {
+        userId: user.userId,
+        email: user.email,
+        nickname: user.nickname,
+        profileImageUrl: imageUrl,
+      });
     } catch (error) {
       return done(error, null);
     }
