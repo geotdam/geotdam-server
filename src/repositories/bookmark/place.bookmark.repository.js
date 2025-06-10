@@ -1,8 +1,7 @@
 import models from "../../models/index.js";
 
-export const createBookmark = async ({ placeBookmarkId, userId, placeId }) => {
+export const createBookmark = async ({ userId, placeId }) => {
   return await models.PlaceBookmarks.create({
-    place_bookmark_id: placeBookmarkId,
     user_id: userId, // 누락된 사용자 ID 추가
     place_id: placeId,
   });
