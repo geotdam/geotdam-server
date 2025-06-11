@@ -68,10 +68,10 @@ const getRouteByMode = async (mode, origin, destination, waypoints, nameSummary)
 
   try {
     const response = await axios.post(url, body, { headers });
-    console.log(`[✅ ${mode}] Tmap 응답 수신 성공`);
+    console.log(`[${mode}] Tmap 응답 수신 성공`);
     return new RouteResponseDto(response.data, nameSummary, mode);
   } catch (error) {
-    console.warn(`[⚠️ ${mode}] 경로 생성 실패`, error.response?.data || error.message);
+    console.warn(`[${mode}] 경로 생성 실패`, error.response?.data || error.message);
     return null; // 실패한 경우 무시
   }
 };

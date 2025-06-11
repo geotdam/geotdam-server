@@ -40,22 +40,22 @@ export const initGoogleRatingsIfNeeded = async () => {
   });
 
   if (dummyExists) {
-    console.log('✅ 더미 리뷰가 이미 존재합니다. 초기화 건너뜁니다.');
+    console.log(' 더미 리뷰가 이미 존재합니다. 초기화 건너뜁니다.');
     return;
   }
 
-  console.log('🚀 [초기화 시작] 구글 장소 조회 + 별점 수집 + 장소/리뷰 등록');
+  console.log('[초기화 시작] 구글 장소 조회 + 별점 수집 + 장소/리뷰 등록');
 
   const places = await getNearbyPlacesInSeongbuk();
 
   for (const { name, lat, lng, address } of places) {
     try {
-      // ⭐ 별점 정보 가져오기
+      // 별점 정보 가져오기
       const { rating, participant } = await getGooglePlaceRating(name);
       console.log(`[DEBUG] ${name} → rating: ${rating}, participant: ${participant}`);
 
       if (rating === 0 && participant === 0) {
-        console.warn(`⚠️ 구글에서 별점 정보 없음: ${name}`);
+        console.warn(`구구글에서 별점 정보 없음: ${name}`);
         continue;
       }
 
@@ -71,7 +71,7 @@ export const initGoogleRatingsIfNeeded = async () => {
             externalRatingParticipant: participant,
             correctedRating: rating,
         });
-        console.log(`📌 장소 생성 완료: ${name}, ID = ${place.placeId || place.id || place.place_id}`);
+        console.log(`장소 생성 완료: ${name}, ID = ${place.placeId || place.id || place.place_id}`);
       } else {
         const [affected] = await Places.update(
           {
@@ -81,7 +81,7 @@ export const initGoogleRatingsIfNeeded = async () => {
           },
           { where: { placeId: place.placeId || place.id || place.place_id } }
         );
-        console.log(`🔁 장소 업데이트 완료: ${name}, affected = ${affected}`);
+        console.log(`장소 업데이트 완료: ${name}, affected = ${affected}`);
       }
 
       // 리뷰 생성
@@ -92,11 +92,11 @@ export const initGoogleRatingsIfNeeded = async () => {
         content: DEFAULT_REVIEW_CONTENT,
       });
 
-      console.log(`✅ ${name} → 더미 리뷰 등록 완료`);
+      console.log(`${name} → 더미 리뷰 등록 완료`);
     } catch (err) {
-      console.error(`❌ ${name} 처리 중 오류:`, err.message);
+      console.error(`${name} 처리 중 오류:`, err.message);
     }
   }
 
-  console.log('🎉 초기화 완료: 성북구 장소 + 구글 별점 + 더미 리뷰');
+  console.log('초기화 완료: 성북구 장소 + 구글 별점 + 더미 리뷰');
 };
