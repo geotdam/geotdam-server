@@ -12,7 +12,7 @@ export const kakaoLogin = async (req, res) => {
     const result = await service.kakaoLogin(code);
     res.status(200).json(result);
   } catch (error) {
-    console.error("❌ 카카오 로그인 오류:", error); // 실제 에러 확인
+    console.error("카카오 로그인 오류:", error); // 실제 에러 확인
     res.status(500).json({ message: "카카오 로그인 실패" });
   }
 };
@@ -161,6 +161,28 @@ export const getCurrentUser = async (req, res) => {
     });
   } catch (error) {
     console.error('유저 정보 가져오기 실패:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+export const getUserProfileById = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await service.getCurrentUser(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return res.status(200).json({
+      user: {
+        nickname: user.nickname,
+        imageUrl: user.UserImg?.imageUrl || null,
+      },
+    });
+  } catch (error) {
+    console.error('사용자 프로필 조회 실패:', error);
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
