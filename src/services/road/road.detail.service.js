@@ -32,6 +32,7 @@ export const getRoadDetail = async (routeId, requesterId) => {
 
   return {
     routeId: route.routeId,
+    userId: route.userId,
     name: route.name,
     description: route.description,
     creatorNickname: route.User?.nickname || null,
