@@ -61,7 +61,7 @@ export const searchPlacesFromTmap = async (query) => {
 
   const pois = res.data?.searchPoiInfo?.pois?.poi || [];
 
-  // ✅ id 기준 중복 제거
+  // id 기준 중복 제거
   const uniquePoisMap = new Map();
   pois.forEach((poi) => {
     if (!uniquePoisMap.has(poi.id)) {

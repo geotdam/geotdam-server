@@ -90,7 +90,7 @@ db.sequelize
   .then(async() => {
     console.log("✅ Database synced successfully.");
 
-    // ✅ 구글 더미 별점 초기화
+    // 구글 더미 별점 초기화
     await initGoogleRatingsIfNeeded();
 
     const socialLoginService = new SocialLoginService();

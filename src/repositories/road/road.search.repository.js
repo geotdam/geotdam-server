@@ -48,7 +48,7 @@ export const findRoadByKeyword = async (keyword, offset = 0, limit = 6) => {
 // 썸네일 조회 함수 추가하기 
 export const getThumbnailByRouteId = async (routeId) => {
   if (!routeId) {
-    console.warn("❗ invalid routeId passed to getThumbnailByRouteId:", routeId);
+    //console.warn("invalid routeId passed to getThumbnailByRouteId:", routeId);
     return null;
   }
 
