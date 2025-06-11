@@ -95,10 +95,10 @@ db.sequelize
 
     const socialLoginService = new SocialLoginService();
     cron.schedule("0 3 * * *", async () => {
-      console.log("[CRON] ⏰ 1년 미접속 유저 비활성화 시작");
+      console.log("[CRON]1년 미접속 유저 비활성화 시작");
       await socialLoginService.deactivateInactiveUsers();
     });
-    console.log("✅ 비활성화 스케줄러가 등록되었습니다. (매일 03:00)");
+    console.log("비활성화 스케줄러가 등록되었습니다. (매일 03:00)");
 
     server.listen(port, () => {
       console.log(`✅ Server with Socket.io listening on port ${port}`);

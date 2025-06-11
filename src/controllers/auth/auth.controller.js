@@ -146,10 +146,10 @@ export const getCurrentUser = async (req, res) => {
     const user = await service.getCurrentUser(decoded.userId);
 
     if (!user) return res.status(404).json({ message: 'User not found' });
-    const { user_id, email, name, nickname, gender, birth, status, UserImg } = user;
+    const { userId, email, name, nickname, gender, birth, status, UserImg } = user;
     return res.status(200).json({
       user: { 
-        user_id,
+        userId,
         email,
         name,
         nickname,

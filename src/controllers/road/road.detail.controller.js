@@ -1,6 +1,8 @@
 import * as roadService from "../../services/road/road.detail.service.js";
 import { InvalidInputError, NotExistsError } from "../../utils/errors/errors.js";
 import { OkSuccess } from "../../utils/success/success.js";
+import models from "../../models/index.js";
+const { Routes, Users, Places } = models;
 
 export const getRoadDetail = async (req, res, next) => {
   try {
@@ -8,7 +10,9 @@ export const getRoadDetail = async (req, res, next) => {
     if (isNaN(routeId)) {
       throw new InvalidInputError("유효하지 않은 routeId입니다.");
     }
-
+    const route = await Routes.findByPk(routeId, {
+    include: [Users] // User 모델 조인 필요
+   });
     const requesterId = req.user?.userId;
     const results = await roadService.getRoadDetail(routeId, requesterId);
 
