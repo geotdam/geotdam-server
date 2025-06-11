@@ -24,9 +24,9 @@ export const createPlaceReview = async (req, res, next) => {
       }
 
       const [createdPlace] = await models.Places.findOrCreate({
-        where: { tmap_place_id: tmapPlaceId },
+        where: { tmapPlaceId: tmapPlaceId},
         defaults: {
-          tmap_place_id: tmapPlaceId,
+          tmapPlaceId: tmapPlaceId,
           name: tmapData.name,
           address: tmapData.address,
           phone: tmapData.phone,
