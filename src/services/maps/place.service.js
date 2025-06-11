@@ -5,7 +5,7 @@ import { getPlaceImageUrl } from '../external/placeImage.service.js' //이미지
 import { getGooglePlaceRating } from '../external/placeRating.service.js'; // 별점 서비스 호출 
 
 // 검색 상세정보 요청 함수
-const getPlaceDetailFromTmap = async (poiId) => {
+export const getPlaceDetailFromTmap = async (poiId) => {
   const url = `https://apis.openapi.sk.com/tmap/pois/${poiId}`; // api 호출 
 
   const res = await axios.get(url, {
