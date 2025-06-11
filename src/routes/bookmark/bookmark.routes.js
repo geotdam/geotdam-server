@@ -26,10 +26,10 @@ router.post(
 router.get("/mypages/bookmarks", authenticateJWT, handleGetUserBookmarks);
 
 // 장소 북마크 조회
-// router.get(
-//   "/places/bookmark",
-//   authenticateJWT,
-//   bookmarkController.getPlaceBookmarks
-// );
+router.get(
+  "/places/bookmark",
+  authenticateJWT,
+  bookmarkController.getPlaceBookmarks
+);
 
 export default router;
