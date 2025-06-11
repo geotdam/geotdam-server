@@ -32,7 +32,7 @@ export const findPlaceBookmarksByCursor = async ({ userId, cursor, limit }) => {
     include: [
       {
         model: models.Places,
-        as: "Place",
+        attributes: ['name', 'tmapPlaceId']  // 필요한 필드만 선택
       },
     ],
     order: [["place_bookmark_id", "DESC"]],

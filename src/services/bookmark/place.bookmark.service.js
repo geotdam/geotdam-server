@@ -29,8 +29,8 @@ export const getPlaceBookmarks = async ({ userId, cursor, limit }) => {
   const results = bookmarks.map(bookmark => ({
     ...new PlaceBookmarkDto(bookmark),
     place: {
-      name: bookmark.place?.name || null,
-      category: bookmark.place?.category || null,
+      name: bookmark.Place?.name || null,
+      tmapPlaceId: bookmark.Place?.tmapPlaceId || null
     },
   }));
 
