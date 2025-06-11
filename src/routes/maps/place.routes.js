@@ -9,8 +9,8 @@ import { searchPlacesDetail } from '../../controllers/maps/place.detail.controll
 const router = express.Router();
 router.get('/places', searchPlaces); //장소검색 라우터 등록 
 router.post('/places/:placeId/rates', authenticateJWT, createOrUpdateRating); //사용자 별점 등록 
-router.post('/places/:placeId/reviews', authenticateJWT, createPlaceReview); // 사용자 장소 리뷰 등록 
-router.get('/places/:placeId/reviews', getPlaceReviews); //장소 리뷰 페이징 
+router.post('/places/:tmapPlaceId/reviews', authenticateJWT, createPlaceReview); // 사용자 장소 리뷰 등록 
+router.get('/places/:tmapPlaceId/reviews', getPlaceReviews); //장소 리뷰 페이징 
 router.get('/places/:placeId', searchPlacesDetail); //장소 상세 검색 라우터 등록  
 
 export default router;
